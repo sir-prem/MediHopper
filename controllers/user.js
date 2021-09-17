@@ -1,3 +1,4 @@
+var MedicalRecordSchema = require("../models/medical-records");
 var User = require("../models/user");
 var fs = require("fs");
 
@@ -103,8 +104,12 @@ function signup (req, res, next) {
     });
 }
 
-function userprofile (req, res) { 
-    res.render('user-profile');  
+async function userprofile(req, res) {
+  const record = await MedicalRecordSchema.findOne({
+    username: req.user.username,
+  });
+  const medical_record = { record };
+  res.render("user-profile", medical_record);
 }
 
 function loginForm (req, res) {
