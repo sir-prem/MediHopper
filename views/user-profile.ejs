@@ -113,7 +113,17 @@
         <nav class="nav flex-column">
             <a class="nav-link menu" href="/edit-profile">Edit Profile</a>
             <a class="nav-link menu" href="/delete-profile">Delete Profile</a>
-            <a class="nav-link menu" href="#">Link</a>
+            <p class="m-0">
+                <a class="nav-link" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    Medical Records
+                </a>
+                </p>
+                <div class="collapse" id="collapseExample">
+                    <a class="nav-link bg-danger menu" href="#" data-bs-toggle="modal" data-bs-target="#heightWeightModal">Height & Weight</a>
+                    <a class="nav-link bg-danger menu" href="#" data-bs-toggle="modal" data-bs-target="#healthConditionModal">Medical Conditions</a>
+                    <a class="nav-link bg-danger menu" href="#" data-bs-toggle="modal" data-bs-target="#currentMedicationModal">Medications</a>
+
+                </div>
             <a class="nav-link menu" href="#">Link</a>
             <a class="nav-link menu disabled" href="#">Disabled</a>
         </nav>
@@ -148,7 +158,74 @@
 
 
 
+<div class="modal fade" id="heightWeightModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Record</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/medical-records" method="POST">
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Height</label>
+            <input type="number" value="<%= record.height ? record.height : '' %>"  name="height" min="0" class="form-control" id="exampleFormControlInput1" placeholder="Height in cms">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Weight</label>
+            <input type="number" value="<%= record.weight ? record.weight : '' %>"  name="weight" min="0" class="form-control" id="exampleFormControlInput1" placeholder="Weight in kgs">
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 
+
+<div class="modal fade" id="healthConditionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Record</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/medical-records" method="POST">
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Health Conditions</label>
+            <textarea name="health_condition" class="form-control" rows="5" placeholder="Please enter your existing medical conditions" /><%= record.health_condition ? record.health_condition : '' %></textarea>
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="currentMedicationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Record</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/medical-records" method="POST">
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Current Medications</label>
+          <textarea name="current_medication" class="form-control" rows="5" placeholder="Let us know if you are taking any medications. Include any allergies you have" /><%= record.current_medication ? record.current_medication : '' %></textarea>
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <% include _footer %>

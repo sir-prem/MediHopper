@@ -2,8 +2,9 @@ var express = require("express");
 var passport = require("passport");
 var multer = require("multer");
 
-var UserController = require('../controllers/user');
-var Utils = require('../utils/utils');
+var UserController = require("../controllers/user");
+var MedicalRecordController = require("../controllers/medical-records");
+var Utils = require("../utils/utils");
 
 var router = express.Router();
 
@@ -102,6 +103,7 @@ router.get("/delete-profile", Utils.ensureAuthenticated, UserController.deleteFo
 // remove user from database
 router.post("/delete-profile", UserController.deleteUser);
 
+router.post("/medical-records", MedicalRecordController.edit);
 
 //========================================
 //
