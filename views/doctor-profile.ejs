@@ -1,0 +1,124 @@
+<% include _header %>
+
+<h1>Doctor Profile</h1>
+
+<div class="row">
+    <div class="col-sm-6 rounded card profile">
+        <table>
+            <tr>
+                <td width="40%">
+                    <img src="data:image/<%=currentUser.profileImage.contentType%>;base64,
+                    <%=currentUser.profileImage.data.toString('base64')%>" width="100%">
+                </td>
+                 
+                <td>
+                    <table>
+                        <tr>
+                            <td><b>
+                                <% if (typeof currentUser.name.given === 'undefined') { %>
+                                    [Given]
+                                <% } else if (currentUser.name.given === "") { %> 
+                                    [Given]
+                                <% } else { %> 
+                                    <%=currentUser.name.given%>
+                                <% } %>
+                                
+                                <% if (typeof currentUser.name.middle === 'undefined') { %>
+                                    
+                                <% } else if (currentUser.name.middle === "") { %> 
+                                    
+                                <% } else { %> 
+                                    <%=currentUser.name.middle%>
+                                <% } %>
+
+                                <% if (typeof currentUser.name.family === 'undefined') { %>
+                                    [Family]
+                                <% } else if (currentUser.name.family === "") { %> 
+                                    [Family]
+                                <% } else { %> 
+                                    <%=currentUser.name.family%>
+                                <% } %>
+                            </b></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <% if (typeof currentUser.address.street === 'undefined') { %>
+                                    [Street]
+                                <% } else if (currentUser.address.street === "") { %> 
+                                    [Street]
+                                <% } else { %> 
+                                    <%=currentUser.address.street%>
+                                <% } %> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                            
+                                <% if (typeof currentUser.address.city === 'undefined') { %>
+                                    [city]
+                                <% } else if (currentUser.address.city === "") { %> 
+                                    [city]
+                                <% } else { %> 
+                                    <%=currentUser.address.city%>
+                                <% } %> 
+                            
+                                <% if (typeof currentUser.address.state === 'undefined') { %>
+                                    [state]
+                                <% } else if (currentUser.address.state === "") { %> 
+                                    [state]
+                                <% } else { %> 
+                                    <%=currentUser.address.state%>
+                                <% } %>
+
+                                <% if (currentUser.address.postcode === null) { %>
+                                    [postcode]
+                                <% } else if (currentUser.address.postcode === "") { %> 
+                                    [postcode]
+                                <% } else { %> 
+                                    <%=currentUser.address.postcode%>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <% if (typeof currentUser.mobile === 'undefined') { %>
+                                    M: [mobile]
+                                <% } else if (currentUser.mobile === "") { %> 
+                                    M: [mobile]
+                                <% } else { %> 
+                                    M: <%=currentUser.mobile%>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <% if (typeof currentUser.email === 'undefined') { %>
+                                    E: [email]
+                                <% } else if (currentUser.email === "") { %> 
+                                    E: [email]
+                                <% } else { %> 
+                                    E: <%=currentUser.email%>
+                                <% } %>
+                            </td>
+                        </tr>
+                    </table>
+                     
+                </td>
+            </tr>
+        </table>
+        
+    </div>
+    <div class="col-sm-3"></div>
+    <div class="col-sm-3">
+        <nav class="nav flex-column">
+            <a class="nav-link menu" href="/edit-profile">Edit Profile</a>
+            <a class="nav-link menu" href="/delete-profile">Delete Profile</a>
+            <a class="nav-link menu" href="/chat">Chat feature test</a>
+            <a class="nav-link menu" href="#">Link</a>
+            <a class="nav-link menu" href="#">Link</a>
+            <a class="nav-link menu disabled" href="#">Disabled</a>
+        </nav>
+    </div>
+</div>
+
+<% include _footer %> 
