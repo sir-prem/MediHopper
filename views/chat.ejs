@@ -13,6 +13,8 @@
     </form>
 </ul>
 
+<h2>Message History</h2><p><span id="msgHistory"></span></p>
+
 <h2>Received Messages</h2><p><span id="serverMsg"></span></p>
 
 
@@ -24,6 +26,7 @@
     var input           = document.getElementById('input');
     var toUsername      = document.getElementById('toUsername');
     var serverMsgSpan   = document.getElementById("serverMsg");
+    var msgHistorySpan  = document.getElementById("msgHistory");
 
     socket.on('connect', () => {
         //socketIdSpan.innerText = socket.id;
@@ -57,6 +60,13 @@
             if (username === data.toUsername) {
                 serverMsgSpan.innerHTML += `<b>${data.fromUsername} says:</b> ${data.msg} <br />`;
             }
+        });
+    });
+
+    socket.on("load all messages", (data) => {
+        data.forEach(message => {
+            msgHistorySpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+            //displayMessage(message);
         });
     });
 
