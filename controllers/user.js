@@ -112,9 +112,53 @@ async function userprofile(req, res) {
   res.render("user-profile", medical_record);
 }
 
+function doctorprofile (req, res) { 
+    res.render('doctor-profile');  
+}
+
+function clinicadminprofile (req, res) { 
+    res.render('clinic-admin-profile');  
+}
+
 function loginForm (req, res) {
     res.render("login");
 }
+
+function loginDoctorForm (req, res) {
+    res.render("doctor-login");
+}
+
+function loginClinicAdminForm (req, res) {
+    res.render("clinic-admin-login");
+}
+
+// login controller, redirects to relevant profile page / dashboard
+// based on user's role
+function login (req, res) {
+    
+    const loginRoleRequest = req.body.role;
+    const actualRole = req.user.role;
+    console.log("login request role (from login form) is " + loginRoleRequest);
+    console.log("actual role (from DB) is " + actualRole);
+
+    if (loginRoleRequest !== actualRole) {
+        req.flash("info", `You are a ${actualRole}. 
+                Re-directing you to the ${actualRole} login page!`);
+        switch(actualRole) {
+            case "patient": res.redirect("/login"); break;
+            case "doctor":  res.redirect("/doctor-login"); break;
+            case "admin":   res.redirect("/clinic-admin-login");
+        }
+    }
+    else { // loginRoleRequest === actualRole
+        switch(actualRole) {
+            case "patient": res.redirect("/user-profile"); break;
+            case "doctor":  res.redirect("/doctor-profile"); break;
+            case "admin":   res.redirect("/clinic-admin-profile");
+        }
+    }
+}
+
 
 function logout (req, res) {
     req.logout();
@@ -154,8 +198,12 @@ function edit (req, res, next) {
             return;
         }
         req.flash("info", "Profile updated!");
-        res.redirect("/user-profile");
-        //res.render('user-profile');
+
+        switch(req.user.role) {
+            case "patient": res.redirect("/user-profile"); break;
+            case "doctor":  res.redirect("/doctor-profile"); break;
+            case "admin":   res.redirect("/clinic-admin-profile");
+        }
     });
     
    //res.send(req.body);
@@ -178,15 +226,25 @@ function deleteUser (req, res, next) {
     });
 }
 
+function chat (req, res, next) {
+    res.render("chat");
+}
+
 module.exports = {
     homepage,
     signUpForm,
     signup,
     userprofile,
+    doctorprofile,
+    clinicadminprofile,
     loginForm,
+    loginDoctorForm,
+    loginClinicAdminForm,
+    login,
     logout,
     editForm,
     edit,
     deleteForm,
-    deleteUser
+    deleteUser,
+    chat
 }

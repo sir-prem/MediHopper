@@ -5,6 +5,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var passport = require("passport");
 var session = require("express-session");
+const bodyParser = require("body-parser");
 var flash = require("connect-flash");
 var morgan = require("morgan");
 
@@ -13,6 +14,11 @@ var app = express();
 
 // require files
 var setUpPassport = require("./setuppassport");
+
+const server = require("http").createServer(app);
+
+
+
 
 // path to mongo database
 var uri = "mongodb+srv://cluster0.7hvms.mongodb.net/";
@@ -52,19 +58,17 @@ app.set("view engine", "ejs");
 // http request logger
 app.use(morgan('tiny'));
 
-// json and url parse
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({ limit: "200mb",  extended: true, parameterLimit: 1000000 }));
-
 // cookie parse
 app.use(cookieParser());
 
+
 // user session middleware
-app.use(session ({
+const sessionMiddleware = session ({
   secret: "asdjDsLKsjkjJlkK3*32h#$%wlkj@#s.<<MX",
   resave: true,
   saveUninitialized: true
-}));
+})
+app.use(sessionMiddleware);
 
 // connect-flash messages middleware
 app.use(flash());
@@ -72,6 +76,11 @@ app.use(flash());
 // passport.js authentication middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+// json and url parser middlewares
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({ limit: "200mb",  extended: true, parameterLimit: 1000000 }));
+
 
 // serve static files
 app.use(express.static(__dirname + '/views'));
@@ -91,7 +100,14 @@ app.use(function(req, res) {
   res.redirect("/");
 });
 
+// initialise Chat middleware
+const io = require('socket.io')(server);
+var users = {};
+var setUpChat = require("./setupchat");
+setUpChat.chatInit (io, sessionMiddleware, passport, users);
+
+
 // listen for http requests
-app.listen(port, function() {
+server.listen(port, function() {
   console.log("Server is running on port: " + port);
 });

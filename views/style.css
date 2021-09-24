@@ -35,19 +35,6 @@ body {
   padding-left: 2%;
 }
 
-a {
-  
-}
-
-a:link {
-  
-}
-/*
-a:visited {
-  color: rgb(132, 73, 158);
-}
-*/
-
 .row {
   padding-bottom: 5%;
 }
@@ -80,6 +67,12 @@ a:active {
   border-color: #ffffff;
 }
 
+.btn-outline-primary {
+  color: #7BBB54;
+  background-color: #ffffff;
+  border-color: #7BBB54;
+}
+
 .menu {
   border: 1px white solid;
 }
@@ -88,6 +81,12 @@ a:active {
   color: #fff;
   background-color: #91cf6b;
   border-color: #ffffff;
+}
+
+.btn-outline-primary:hover {
+  color: #ffffff;
+  background-color: #7BBB54;
+  border-color: #7BBB54;
 }
 
 a.nav-link.headerlink {

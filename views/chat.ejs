@@ -1,0 +1,67 @@
+<% include _header %> 
+
+<h1>Chat feature testing</h1>
+
+<h3>Username: <span id="username"></span></h3>
+
+<p>Send new message to:</p>
+<ul id="messages">
+    <form id="form" action="">
+        <input id="toUsername" name="toUsername" type="text"
+            placeholder="username" />
+        <input id="input" autocomplete="off" /><input type="submit" value="send" />    
+    </form>
+</ul>
+
+<h2>Received Messages</h2><p><span id="serverMsg"></span></p>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const usernameSpan  = document.getElementById("username");
+    var form            = document.getElementById('form');  
+    var input           = document.getElementById('input');
+    var toUsername      = document.getElementById('toUsername');
+    var serverMsgSpan   = document.getElementById("serverMsg");
+
+    socket.on('connect', () => {
+        //socketIdSpan.innerText = socket.id;
+
+        socket.emit('whoami', (username) => {
+            console.log('client: username is ' + username);
+            usernameSpan.innerText = username;
+
+            form.addEventListener('submit', function(e) {    
+                e.preventDefault();    
+                if (input.value) {      
+                    socket.emit('from message', 
+                                    {
+                                        socketId: socket.id,
+                                        fromUsername: username,
+                                        msg: input.value,
+                                        toUsername: toUsername.value
+                                    }
+                                );   
+                    //reset input field   
+                    input.value = '';    
+                }  
+            });
+
+            
+        });
+    });
+
+    socket.on('to message', (data) => {
+        socket.emit('whoami', (username) => {
+            if (username === data.toUsername) {
+                serverMsgSpan.innerHTML += `<b>${data.fromUsername} says:</b> ${data.msg} <br />`;
+            }
+        });
+    });
+
+    
+
+</script>
+
+<% include _footer %> 

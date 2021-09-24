@@ -2,5 +2,3 @@ node_modules/**
 dockercmds
 users
 medihopper.code-workspace
-file/**
-uploads/**

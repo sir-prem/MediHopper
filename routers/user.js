@@ -53,14 +53,11 @@ router.get("/signup", UserController.signUpForm);
 // sign up the new user (save to DB and log them in)
 router.post("/signup", upload.single('profile-image'), 
     UserController.signup, 
-    passport.authenticate("login", 
-        {
-            successRedirect: "/user-profile",
-            failureRedirect: "/signup",
-            failureFlash: true
-        })
+    passport.authenticate('login', {
+            failureRedirect: '/login'
+        }), 
+        UserController.login
 );
-
 
 
 //=====================================
@@ -71,15 +68,19 @@ router.post("/signup", upload.single('profile-image'),
 // display the login form
 router.get("/login", UserController.loginForm);
 
+// display the login form
+router.get("/doctor-login", UserController.loginDoctorForm);
+
+// display the login form
+router.get("/clinic-admin-login", UserController.loginClinicAdminForm);
+
 
 // authenticate the user's login attempt
 router.post("/login", 
-    passport.authenticate("login", 
-        {
-            successRedirect: "/user-profile",
-            failureRedirect: "/login",
-            failureFlash: true
-        })
+    passport.authenticate('login', {
+            failureRedirect: '/login'
+        }), 
+        UserController.login
 );
 
 
@@ -90,6 +91,12 @@ router.post("/login",
 
 // display user's profile (if logged in)
 router.get('/user-profile', Utils.ensureAuthenticated, UserController.userprofile);
+
+// display doctor's profile (if logged in)
+router.get('/doctor-profile', Utils.ensureAuthenticated, UserController.doctorprofile);
+
+// display clinic admin's profile (if logged in)
+router.get('/clinic-admin-profile', Utils.ensureAuthenticated, UserController.clinicadminprofile);
 
 // display form for editing user profile
 router.get("/edit-profile", Utils.ensureAuthenticated, UserController.editForm);
@@ -104,6 +111,14 @@ router.get("/delete-profile", Utils.ensureAuthenticated, UserController.deleteFo
 router.post("/delete-profile", UserController.deleteUser);
 
 router.post("/medical-records", MedicalRecordController.edit);
+
+
+//=====================================
+//
+//      CHAT ROUTE
+//
+router.get("/chat", UserController.chat);
+
 
 //========================================
 //
