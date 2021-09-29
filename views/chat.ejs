@@ -13,7 +13,15 @@
     </form>
 </ul>
 
-<h2>Message History</h2><p><span id="msgHistory"></span></p>
+<h2>Message History</h2><p><span id="msgHistoryAll"></span></p>
+
+<h2>Load Message History with User</h2>
+<form id="userMsgHistoryForm" action="">
+    <input id="targetUsername" type="text"
+        placeholder="username" />
+    <input type="submit" value="Load" />
+</form>
+<p><span id="msgHistoryUser"></span></p>
 
 <h2>Received Messages</h2><p><span id="serverMsg"></span></p>
 
@@ -21,12 +29,15 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
-    const usernameSpan  = document.getElementById("username");
-    var form            = document.getElementById('form');  
-    var input           = document.getElementById('input');
-    var toUsername      = document.getElementById('toUsername');
-    var serverMsgSpan   = document.getElementById("serverMsg");
-    var msgHistorySpan  = document.getElementById("msgHistory");
+    const usernameSpan      =   document.getElementById('username');
+    var form                =   document.getElementById('form');  
+    var input               =   document.getElementById('input');
+    var toUsername          =   document.getElementById('toUsername');
+    var serverMsgSpan       =   document.getElementById('serverMsg');
+    var msgHistoryAllSpan   =   document.getElementById('msgHistoryAll');
+    var msgHistoryUserSpan  =   document.getElementById('msgHistoryUser');
+    var userMsgHistoryForm  =   document.getElementById('userMsgHistoryForm');
+    var targetUsername      =   document.getElementById('targetUsername');
 
     socket.on('connect', () => {
         //socketIdSpan.innerText = socket.id;
@@ -51,6 +62,14 @@
                 }  
             });
 
+            userMsgHistoryForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (targetUsername.value) {
+                    socket.emit('target user', 
+                            { targetUsername: targetUsername.value });
+                }
+            });
+
             
         });
     });
@@ -65,7 +84,15 @@
 
     socket.on("load all messages", (data) => {
         data.forEach(message => {
-            msgHistorySpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+            msgHistoryAllSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+            //displayMessage(message);
+        });
+    });
+
+    socket.on("load messages with user", (data) => {
+        msgHistoryUserSpan.innerHTML = ``;
+        data.forEach(message => {
+            msgHistoryUserSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
             //displayMessage(message);
         });
     });
