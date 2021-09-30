@@ -1,4 +1,5 @@
 const Message = require('../models/message');
+const User = require('../models/user');
 
 // save new messages to DB, and then
 // emit the message to the recipient
@@ -15,6 +16,7 @@ function saveAndEmitNewMsg(data, io, users) {
     m.save()
     .then(() => {
         io.to(users[data.toUsername]).emit('to message', data);
+        sendersToRecipient(data.toUsername, io, users);
     })
     .catch(error => console.log(`error: ${error.message}`));
 }
@@ -51,8 +53,23 @@ function messagesWithUser(myUsername, otherUsername, io, users) {
         });
 }
 
+function sendersToRecipient(recipientUsername, io, users) {
+    //var senderUsernames = [];
+    var senders = [];
+
+    Message.find({toUsername:recipientUsername})
+    .distinct('fromUsername', function(error, senderUsernames) {
+        // senderUsernames is an array usernames of all senders
+        // to this recipient
+        console.log(senderUsernames);
+        io.to(users[recipientUsername]).emit("senders to me", senderUsernames);
+    });
+
+}
+
 module.exports = {
     saveAndEmitNewMsg,
     loadAllMessages,
-    messagesWithUser
+    messagesWithUser,
+    sendersToRecipient
 }

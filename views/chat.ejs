@@ -15,6 +15,8 @@
 
 <h2>Message History</h2><p><span id="msgHistoryAll"></span></p>
 
+<h2>Live Chat</h2><p><span id="serverMsg"></span></p>
+
 <h2>Load Message History with User</h2>
 <form id="userMsgHistoryForm" action="">
     <input id="targetUsername" type="text"
@@ -23,7 +25,10 @@
 </form>
 <p><span id="msgHistoryUser"></span></p>
 
-<h2>Received Messages</h2><p><span id="serverMsg"></span></p>
+<h2>Live Senders List</h2>
+<p><span id="sendersList"</span></p>
+
+
 
 
 <script src="/socket.io/socket.io.js"></script>
@@ -38,6 +43,7 @@
     var msgHistoryUserSpan  =   document.getElementById('msgHistoryUser');
     var userMsgHistoryForm  =   document.getElementById('userMsgHistoryForm');
     var targetUsername      =   document.getElementById('targetUsername');
+    var sendersListSpan     =   document.getElementById('sendersList');
 
     socket.on('connect', () => {
         //socketIdSpan.innerText = socket.id;
@@ -93,6 +99,14 @@
         msgHistoryUserSpan.innerHTML = ``;
         data.forEach(message => {
             msgHistoryUserSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+            //displayMessage(message);
+        });
+    });
+
+    socket.on("senders to me", (data) => {
+        sendersListSpan.innerHTML = ``;
+        data.forEach(senderUsername => {
+            sendersListSpan.innerHTML += `${senderUsername} <br />`;
             //displayMessage(message);
         });
     });

@@ -31,6 +31,7 @@ function chatInit (io, sessionMiddleware, passport, users) {
         users[socket.request.user.username] = socket.id;
 
         ChatController.loadAllMessages(socket.request.user.username, io, users);
+        ChatController.sendersToRecipient(socket.request.user.username, io, users);
 
         const session = socket.request.session;
         console.log(`saving sid ${socket.id} in session ${session.id}`);
@@ -41,6 +42,7 @@ function chatInit (io, sessionMiddleware, passport, users) {
         // emit the message to the recipient
         socket.on('from message', (data) => {    
            ChatController.saveAndEmitNewMsg(data, io, users);
+           //ChatController.sendersToRecipient(data.toUsername, io, users);
         });
 
         socket.on('target user', (data) => {
