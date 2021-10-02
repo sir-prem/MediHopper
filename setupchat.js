@@ -16,7 +16,7 @@ function chatInit (io, sessionMiddleware, passport, users) {
         }
     });
 
-    io.on('connect', (socket) => {
+    io.on('connect', async (socket) => {
         console.log(`new connection ${socket.id}`);
 
         socket.on('disconnect', () => {    
@@ -30,7 +30,8 @@ function chatInit (io, sessionMiddleware, passport, users) {
         //map usernames to their socket ID's as key-value pairs
         users[socket.request.user.username] = socket.id;
 
-        ChatController.loadAllMessages(socket.request.user.username, io, users);
+        await ChatController.loadAllMessagesByRole(socket.request.user.username, io, users, 'patient');
+        await ChatController.loadAllMessagesByRole(socket.request.user.username, io, users, 'doctor');
         ChatController.sendersToRecipient(socket.request.user.username, io, users);
 
         const session = socket.request.session;
@@ -42,7 +43,6 @@ function chatInit (io, sessionMiddleware, passport, users) {
         // emit the message to the recipient
         socket.on('from message', (data) => {    
            ChatController.saveAndEmitNewMsg(data, io, users);
-           //ChatController.sendersToRecipient(data.toUsername, io, users);
         });
 
         socket.on('target user', (data) => {

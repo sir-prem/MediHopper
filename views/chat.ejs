@@ -13,9 +13,11 @@
     </form>
 </ul>
 
-<h2>Message History</h2><p><span id="msgHistoryAll"></span></p>
-
 <h2>Live Chat</h2><p><span id="serverMsg"></span></p>
+
+<h2>Chat History with Doctors</h2><p><span id="msgHistoryDoctors"></span></p>
+
+<h2>Chat History with Patients</h2><p><span id="msgHistoryPatients"></span></p>
 
 <h2>Load Message History with User</h2>
 <form id="userMsgHistoryForm" action="">
@@ -25,8 +27,11 @@
 </form>
 <p><span id="msgHistoryUser"></span></p>
 
-<h2>Live Senders List</h2>
-<p><span id="sendersList"</span></p>
+<h2>Live Senders List: Patients</h2>
+<p><span id="patientSendersList"</span></p>
+
+<h2>Live Senders List: Doctors</h2>
+<p><span id="doctorSendersList"</span></p>
 
 
 
@@ -34,16 +39,18 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
-    const usernameSpan      =   document.getElementById('username');
-    var form                =   document.getElementById('form');  
-    var input               =   document.getElementById('input');
-    var toUsername          =   document.getElementById('toUsername');
-    var serverMsgSpan       =   document.getElementById('serverMsg');
-    var msgHistoryAllSpan   =   document.getElementById('msgHistoryAll');
-    var msgHistoryUserSpan  =   document.getElementById('msgHistoryUser');
-    var userMsgHistoryForm  =   document.getElementById('userMsgHistoryForm');
-    var targetUsername      =   document.getElementById('targetUsername');
-    var sendersListSpan     =   document.getElementById('sendersList');
+    const usernameSpan          =   document.getElementById('username');
+    var form                    =   document.getElementById('form');  
+    var input                   =   document.getElementById('input');
+    var toUsername              =   document.getElementById('toUsername');
+    var serverMsgSpan           =   document.getElementById('serverMsg');
+    var msgHistoryDoctorsSpan   =   document.getElementById('msgHistoryDoctors');
+    var msgHistoryPatientsSpan  =   document.getElementById('msgHistoryPatients');
+    var msgHistoryUserSpan      =   document.getElementById('msgHistoryUser');
+    var userMsgHistoryForm      =   document.getElementById('userMsgHistoryForm');
+    var targetUsername          =   document.getElementById('targetUsername');
+    var patientSendersListSpan  =   document.getElementById('patientSendersList');
+    var doctorSendersListSpan   =   document.getElementById('doctorSendersList');
 
     socket.on('connect', () => {
         //socketIdSpan.innerText = socket.id;
@@ -82,16 +89,21 @@
 
     socket.on('to message', (data) => {
         socket.emit('whoami', (username) => {
-            if (username === data.toUsername) {
-                serverMsgSpan.innerHTML += `<b>${data.fromUsername} says:</b> ${data.msg} <br />`;
+            if (username === data.toUsername || username === data.fromUsername) {
+                serverMsgSpan.innerHTML += `<b>${data.fromUsername} says to ${data.toUsername}:</b> ${data.msg} <br />`;
             }
         });
     });
 
-    socket.on("load all messages", (data) => {
+    socket.on("load doctor messages", (data) => {
         data.forEach(message => {
-            msgHistoryAllSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
-            //displayMessage(message);
+            msgHistoryDoctorsSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+        });
+    });
+
+    socket.on("load patient messages", (data) => {
+        data.forEach(message => {
+            msgHistoryPatientsSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
         });
     });
 
@@ -99,15 +111,20 @@
         msgHistoryUserSpan.innerHTML = ``;
         data.forEach(message => {
             msgHistoryUserSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
-            //displayMessage(message);
         });
     });
 
-    socket.on("senders to me", (data) => {
-        sendersListSpan.innerHTML = ``;
+    socket.on("patients to me", (data) => {
+        patientSendersListSpan.innerHTML = ``;
         data.forEach(senderUsername => {
-            sendersListSpan.innerHTML += `${senderUsername} <br />`;
-            //displayMessage(message);
+            patientSendersListSpan.innerHTML += `${senderUsername} <br />`;
+        });
+    });
+
+    socket.on("doctors to me", (data) => {
+        doctorSendersListSpan.innerHTML = ``;
+        data.forEach(senderUsername => {
+            doctorSendersListSpan.innerHTML += `${senderUsername} <br />`;
         });
     });
 
