@@ -111,13 +111,6 @@ router.post("/delete-profile", UserController.deleteUser);
 
 
 
-//=====================================
-//
-//      CHAT ROUTE
-//
-router.get("/chat", UserController.chat);
-
-
 //========================================
 //
 //      LOGOUT ROUTE

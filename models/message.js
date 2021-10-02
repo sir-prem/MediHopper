@@ -17,8 +17,4 @@ const messageSchema = new Schema({
 }, 
 { timestamps: true });
 
-messageSchema.methods.getDay = function() {
-    return this.createdAt;
-};
-
 module.exports = mongoose.model("Message", messageSchema);

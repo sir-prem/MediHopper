@@ -30,8 +30,8 @@ function chatInit (io, sessionMiddleware, passport, users) {
         //map usernames to their socket ID's as key-value pairs
         users[socket.request.user.username] = socket.id;
 
-        await ChatController.loadAllMessagesByRole(socket.request.user.username, io, users, 'patient');
-        await ChatController.loadAllMessagesByRole(socket.request.user.username, io, users, 'doctor');
+        await ChatController.loadAllMessagesByRole(socket.request.user.username, io, users, 'patient', 50);
+        await ChatController.loadAllMessagesByRole(socket.request.user.username, io, users, 'doctor', 50);
         ChatController.sendersToRecipient(socket.request.user.username, io, users);
 
         const session = socket.request.session;

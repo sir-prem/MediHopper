@@ -1,6 +1,14 @@
 const Message = require('../models/message');
 const User = require('../models/user');
 
+function chat (req, res, next) {
+    res.render("chat");
+}
+
+function chatDashboard(req, res, next) {
+    res.render("clinic-chat-dashboard");
+}
+
 // save new messages to DB, and then
 // emit the message to the recipient
 function saveAndEmitNewMsg(data, io, users) {
@@ -22,9 +30,9 @@ function saveAndEmitNewMsg(data, io, users) {
     .catch(error => console.log(`error: ${error.message}`));
 }
 
-// loads all messages (recent 10) 
-// sent to or received by this user
-async function loadAllMessagesByRole(username, io, users, role) {
+// loads all messages (recent 'limitby' amount) sent to or received by this user
+// by the give role i.e. 'patient' or 'doctor'
+async function loadAllMessagesByRole(username, io, users, role, limitby) {
     var filteredMessages;
     var messages = await Message.find({
         $or: [
@@ -33,7 +41,7 @@ async function loadAllMessagesByRole(username, io, users, role) {
             ]
         })
         .sort({ createdAt: -1 });
-    var filteredMessages = await filterMessagesByRole(messages, role, 5);
+    var filteredMessages = await filterMessagesByRole(messages, role, limitby);
     io.to(users[username]).emit(`load ${role} messages`, filteredMessages.reverse());
 }
 
@@ -124,6 +132,8 @@ async function sendersToRecipient(recipientUsername, io, users) {
 }
 
 module.exports = {
+    chat,
+    chatDashboard,
     saveAndEmitNewMsg,
     loadAllMessagesByRole,
     messagesWithUser,

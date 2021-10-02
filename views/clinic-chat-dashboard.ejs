@@ -1,10 +1,27 @@
 <% include _header %> 
 
-<h1>Chat feature testing</h1>
+<h1>Clinic Admin Chat Dashboard</h1>
 
-<h3>Username: <span id="username"></span></h3>
+<h2>Chat with patients and doctors</h2>
 
-<p>Send new message to:</p>
+<br /><br />
+
+<h3>Chat History with <b>Patients</b></h3>
+<p><div class="overflow-auto chat-history-div card rounded"><span id="msgHistoryPatients"></span></div></p>
+
+<br /><br />
+
+<h3>Chat History with <b>Doctors</b></h3>
+<p><div class="overflow-auto chat-history-div card rounded"><span id="msgHistoryDoctors"></span></div></p>
+
+<br /><br />
+
+<h3 style="color:tomato;">Live 1-to-1 Chat Feed</h3>
+<p><div class="overflow-auto chat-history-div card rounded"><span id="serverMsg"></span></div></p>
+
+<br />
+
+<h3>Send new message</h3>
 <ul id="messages">
     <form id="form" action="">
         <input id="toUsername" name="toUsername" type="text"
@@ -13,41 +30,25 @@
     </form>
 </ul>
 
-<h2>Live Chat</h2><p><span id="serverMsg"></span></p>
+<br /><br />
 
-<h2>Chat History with Doctors</h2><p><span id="msgHistoryDoctors"></span></p>
-
-<h2>Chat History with Patients</h2><p><span id="msgHistoryPatients"></span></p>
-
-<h2>Load Message History with User</h2>
-<form id="userMsgHistoryForm" action="">
-    <input id="targetUsername" type="text"
-        placeholder="username" />
-    <input type="submit" value="Load" />
-</form>
-<p><span id="msgHistoryUser"></span></p>
-
-<h2>Live Senders List: Patients</h2>
+<h3>Live Senders List: <b>Patients</b></h3>
 <p><span id="patientSendersList"</span></p>
 
-<h2>Live Senders List: Doctors</h2>
+<h3>Live Senders List: <b>Doctors</b></h3>
 <p><span id="doctorSendersList"</span></p>
 
 
 <script src="/socket.io/socket.io.js"></script>
 <% include chatHelpers %> 
 <script>
-    const socket = io();
-    const usernameSpan          =   document.getElementById('username');
+    const socket                =   io();
     var form                    =   document.getElementById('form');  
     var input                   =   document.getElementById('input');
     var toUsername              =   document.getElementById('toUsername');
     var serverMsgSpan           =   document.getElementById('serverMsg');
     var msgHistoryDoctorsSpan   =   document.getElementById('msgHistoryDoctors');
     var msgHistoryPatientsSpan  =   document.getElementById('msgHistoryPatients');
-    var msgHistoryUserSpan      =   document.getElementById('msgHistoryUser');
-    var userMsgHistoryForm      =   document.getElementById('userMsgHistoryForm');
-    var targetUsername          =   document.getElementById('targetUsername');
     var patientSendersListSpan  =   document.getElementById('patientSendersList');
     var doctorSendersListSpan   =   document.getElementById('doctorSendersList');
 
@@ -56,7 +57,6 @@
 
         socket.emit('whoami', (username) => {
             console.log('client: username is ' + username);
-            usernameSpan.innerText = username;
 
             form.addEventListener('submit', function(e) {    
                 e.preventDefault();    
@@ -104,13 +104,6 @@
     socket.on("load patient messages", (data) => {
         data.forEach(message => {
             displayMessageString(message.createdAt, true, message, msgHistoryPatientsSpan);
-        });
-    });
-
-    socket.on("load messages with user", (data) => {
-        msgHistoryUserSpan.innerHTML = ``;
-        data.forEach(message => {
-            displayMessageString(message.createdAt, true, message, msgHistoryUserSpan);
         });
     });
 

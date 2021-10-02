@@ -221,10 +221,6 @@ function deleteUser (req, res, next) {
     });
 }
 
-function chat (req, res, next) {
-    res.render("chat");
-}
-
 module.exports = {
     homepage,
     signUpForm,
@@ -240,6 +236,5 @@ module.exports = {
     editForm,
     edit,
     deleteForm,
-    deleteUser,
-    chat
+    deleteUser
 }

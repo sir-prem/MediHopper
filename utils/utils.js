@@ -17,6 +17,21 @@ function ensureAuthenticated(req, res, next) {
     }
 }
 
+
+function ensureAdminRole(req, res, next) {
+
+    if (res.locals.currentUser.role === 'admin') {
+        next();
+    } else {
+        req.flash("info", "You must have an Admin role to see this page.");
+        if (res.locals.currentUser.role === 'patient') {
+            res.redirect("/user-profile");
+        } else { //res.locals.currentUser.role === 'doctor'
+            res.redirect("/doctor-profile");
+        }
+    }
+}
+
 // Gets the current time and returns it as a String
 async function getCurTimeStr() {
 
@@ -52,6 +67,7 @@ async function getEtaTimeStr(waitTimeHours) {
 
 module.exports = {
     ensureAuthenticated,
+    ensureAdminRole,
     getCurTimeStr,
     getEtaTimeStr
 }
