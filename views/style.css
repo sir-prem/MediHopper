@@ -126,6 +126,10 @@ textarea.feedback {
   width: 100%;
 }
 
+.date-time {
+  color: #7BBB54;
+}
+
 /* Set the size of the div element that contains the map */
 #map {
   height: 400px;

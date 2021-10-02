@@ -34,8 +34,6 @@
 <p><span id="doctorSendersList"</span></p>
 
 
-
-
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
@@ -66,7 +64,7 @@
                                     {
                                         socketId: socket.id,
                                         fromUsername: username,
-                                        msg: input.value,
+                                        content: input.value,
                                         toUsername: toUsername.value
                                     }
                                 );   
@@ -90,27 +88,34 @@
     socket.on('to message', (data) => {
         socket.emit('whoami', (username) => {
             if (username === data.toUsername || username === data.fromUsername) {
-                serverMsgSpan.innerHTML += `<b>${data.fromUsername} says to ${data.toUsername}:</b> ${data.msg} <br />`;
+                displayMessageString(null, false, data, serverMsgSpan);
+
+                /*
+                serverMsgSpan.innerHTML += 
+                        `<b>${data.fromUsername} says to 
+                            ${data.toUsername}:</b> 
+                            ${data.content} <br />`;
+                            */
             }
         });
     });
 
     socket.on("load doctor messages", (data) => {
         data.forEach(message => {
-            msgHistoryDoctorsSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+            displayMessageString(message.createdAt, true, message, msgHistoryDoctorsSpan);
         });
     });
 
     socket.on("load patient messages", (data) => {
         data.forEach(message => {
-            msgHistoryPatientsSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+            displayMessageString(message.createdAt, true, message, msgHistoryPatientsSpan);
         });
     });
 
     socket.on("load messages with user", (data) => {
         msgHistoryUserSpan.innerHTML = ``;
         data.forEach(message => {
-            msgHistoryUserSpan.innerHTML += `<b>${message.fromUsername} said to ${message.toUsername}:</b> ${message.content} <br />`;
+            displayMessageString(message.createdAt, true, message, msgHistoryUserSpan);
         });
     });
 
@@ -128,7 +133,35 @@
         });
     });
 
-    
+    // if bool flag is true, then use date from existing message's create time
+    // else if bool flag is false, for a newly emitted message, use current 
+    // time/date (now) as the message hasn't yet been saved to database
+    function getDateTimeString(dateObject, bool) {
+        var msgDate;
+        if (bool) {
+            msgDate = new Date(dateObject);
+        } else {
+            msgDate = new Date(); // initialise to Now
+        }
+        var day     = msgDate.getDate();
+        var month   = msgDate.getMonth()+1;
+        var year    = msgDate.getFullYear();
+        var hrs     = msgDate.getHours();
+        var mins    = msgDate.getMinutes();
+        var secs    = msgDate.getSeconds();
+
+        return `[ ${day}/${month}/${year} at ${hrs}:${mins} ]`;
+    }
+
+    // A template for chat messages. Updates the Html element.
+    function displayMessageString(dateObject, bool, message, htmlElement) {
+        var dateTimeString = getDateTimeString(dateObject, bool);
+            htmlElement.innerHTML += 
+                    `<span class="date-time"><b>${dateTimeString}</b></span>
+                        <b>${message.fromUsername}</b> said to 
+                        <b>${message.toUsername}</b>: 
+                        ${message.content} <br />`;
+    }
 
 </script>
 

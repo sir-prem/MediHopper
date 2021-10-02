@@ -4,10 +4,10 @@ const User = require('../models/user');
 // save new messages to DB, and then
 // emit the message to the recipient
 function saveAndEmitNewMsg(data, io, users) {
-    console.log(`${data.fromUsername} (${data.socketId}) says: ${data.msg}`);
+    console.log(`${data.fromUsername} (${data.socketId}) says: ${data.content}`);
 
     let messageAttributes = {
-        content: data.msg,
+        content: data.content,
         fromUsername: data.fromUsername,
         toUsername: data.toUsername
     },
@@ -94,6 +94,8 @@ function messagesWithUser(myUsername, otherUsername, io, users) {
         });
 }
 
+// function that returns arrays for all patients and all doctors 
+// who have sent messages to this recipient (clinic)
 async function sendersToRecipient(recipientUsername, io, users) {
     var senderUsernames = [];
     var doctorUsernames = [];
