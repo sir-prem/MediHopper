@@ -1,0 +1,140 @@
+<% include _header %> 
+<h1>
+    <% if (myRole === 'admin') { %>
+        <% if (recipient.role === 'patient') { %>
+            Chat with Patient
+        <% } %>
+        <% if (recipient.role === 'doctor') { %>
+            Chat with Doctor
+        <% } %>
+    <% } %>
+    <% if (myRole === 'patient' || 'doctor') { %>
+            Chat with Clinic
+    <% } %>
+</h1>
+<div class="row">
+
+    <div class="col-sm-9">
+
+        <h2>
+            <% if (myRole === 'admin') { %>
+                Send messages and respond to the <%= recipient.role %>
+            <% } %>
+            <% if (myRole === 'patient' || myRole === 'doctor') { %>
+                Send messages and respond to the Clinic
+            <% } %>
+        </h2>
+
+
+        <br />
+
+        <h4><span style="color:#404153;">Currently chatting with: 
+            </span><b><%= recipient.name.given %> <%= recipient.name.family %></b></h4>
+
+        <img src="data:image/<%=recipient.profileImage.contentType%>;base64,
+                            <%=recipient.profileImage.data.toString('base64')%>"
+                            width="20%">
+        <br /><br />
+
+        <h3>Chat History with <b><%= recipient.username %></b></h3>
+
+        <p><div class="overflow-auto chat-history-div card rounded">
+            <span id="msgHistoryUser"> <%- htmlDisplayString %> </span></div></p>
+        <div id="mydiv" data-recipient-username="<%= recipient.username %>"></div>
+        <br /><br />
+
+        <h3><span style="color:tomato;">LIVE CHAT</span> with <b><%= recipient.username %></b></h3>
+        <p><div class="overflow-auto chat-history-div card rounded"><span id="serverMsg"></span></div></p>
+
+        <h3>Send new message</h3>
+        <ul id="messages">
+            <form id="form" action="">
+                <input id="toUsername" name="toUsername" type="text"
+                    placeholder="username" />
+                <input id="input" autocomplete="off" /><input type="submit" value="send" />    
+            </form>
+        </ul>
+
+    </div>
+
+    <div class="col-sm-3">
+        <nav class="nav flex-column">
+            <% if (myRole === 'admin') { %>            
+                <a class="nav-link menu" href="/clinic-admin-profile">Clinic Profile</a>
+                <a class="nav-link menu" href="/chat/clinic-dashboard">Chat Dashboard</a>
+                <a class="nav-link menu" href="#">Manage Queue</a>
+                <a class="nav-link menu" href="#">Link</a>
+                <a class="nav-link menu disabled" href="#">Disabled</a>
+            <% } %>
+            <% if (myRole === 'patient') { %>            
+                <a class="nav-link menu" href="/user-profile">Patient Profile</a>
+                <a class="nav-link menu" href="#">Manage Queue</a>
+                <a class="nav-link menu" href="#">Link</a>
+                <a class="nav-link menu disabled" href="#">Disabled</a>
+            <% } %>
+            <% if (myRole === 'doctor') { %>            
+                <a class="nav-link menu" href="/doctor-profile">Doctor Profile</a>
+                <a class="nav-link menu" href="#">Manage Queue</a>
+                <a class="nav-link menu" href="#">Link</a>
+                <a class="nav-link menu disabled" href="#">Disabled</a>
+            <% } %>
+
+            
+        </nav>
+    </div>
+
+</div>
+
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<% include chatHelpers %> 
+<script>
+    const socket                =   io();
+    var recipientUsername       =   document.getElementById('mydiv').dataset.recipientUsername;
+    const usernameSpan          =   document.getElementById('username');
+    var form                    =   document.getElementById('form');  
+    var input                   =   document.getElementById('input');
+    var toUsername              =   document.getElementById('toUsername');
+    var serverMsgSpan           =   document.getElementById('serverMsg');
+    var msgHistoryDoctorsSpan   =   document.getElementById('msgHistoryDoctors');
+    var msgHistoryPatientsSpan  =   document.getElementById('msgHistoryPatients');
+    var msgHistoryUserSpan      =   document.getElementById('msgHistoryUser');
+    var userMsgHistoryForm      =   document.getElementById('userMsgHistoryForm');
+
+    socket.on('connect', () => {
+               
+        socket.emit('whoami', (username) => {
+            console.log('client: username is ' + username);
+
+            form.addEventListener('submit', function(e) {    
+                e.preventDefault();    
+                if (input.value) {      
+                    socket.emit('from message', 
+                                    {
+                                        socketId: socket.id,
+                                        fromUsername: username,
+                                        content: input.value,
+                                        toUsername: toUsername.value
+                                    }
+                                );   
+                    //reset input field   
+                    input.value = '';    
+                }  
+            });
+        });
+    });
+
+    socket.on('to message', (data) => {
+        socket.emit('whoami', (username) => {
+            if (username === data.toUsername || username === data.fromUsername) {
+                displayMessageString(null, false, data, serverMsgSpan);
+
+            }
+        });
+    });
+
+</script>
+
+<% include _footer %> 

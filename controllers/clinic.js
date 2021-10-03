@@ -2,6 +2,7 @@ var Clinic = require('../models/clinic');
 var Utils = require('../utils/utils');
 
 const NodeGeocoder = require('node-geocoder');
+const User = require('../models/user');
 
 // options for NodeGeocoder npm package
 const options = {
@@ -37,6 +38,13 @@ async function bookingConf (req, res, next) {
         { _id: clinicID }, 
         { $push: { queue: curUsername } },
         ).exec();
+
+    // set joined clinic's username for current user
+    var user = await User.findOneAndUpdate(
+        { username: curUsername }, 
+        { $set: { clinicUsername: clinic.username } },
+        ).exec();
+    console.log(user);
 
     // Gets properties of latitude and longitude based on address
     const geoResult = await geocoder.geocode(clinic.clinicAddress());

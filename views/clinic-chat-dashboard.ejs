@@ -2,41 +2,66 @@
 
 <h1>Clinic Admin Chat Dashboard</h1>
 
-<h2>Chat with patients and doctors</h2>
+<div class="row">
 
-<br /><br />
+    <div class="col-sm-6">
 
-<h3>Chat History with <b>Patients</b></h3>
-<p><div class="overflow-auto chat-history-div card rounded"><span id="msgHistoryPatients"></span></div></p>
+        <h2>Chat with patients and doctors</h2>
 
-<br /><br />
+        <br /><br />
 
-<h3>Chat History with <b>Doctors</b></h3>
-<p><div class="overflow-auto chat-history-div card rounded"><span id="msgHistoryDoctors"></span></div></p>
+        <h3>Chat History with <b>Patients</b></h3>
+        <p><div class="overflow-auto chat-history-div card rounded"><span id="msgHistoryPatients"></span></div></p>
 
-<br /><br />
+        <br /><br />
 
-<h3 style="color:tomato;">Live 1-to-1 Chat Feed</h3>
-<p><div class="overflow-auto chat-history-div card rounded"><span id="serverMsg"></span></div></p>
+        <h3>Chat History with <b>Doctors</b></h3>
+        <p><div class="overflow-auto chat-history-div card rounded"><span id="msgHistoryDoctors"></span></div></p>
 
-<br />
+        <br /><br />
 
-<h3>Send new message</h3>
-<ul id="messages">
-    <form id="form" action="">
-        <input id="toUsername" name="toUsername" type="text"
-            placeholder="username" />
-        <input id="input" autocomplete="off" /><input type="submit" value="send" />    
-    </form>
-</ul>
+        <h3 style="color:tomato;">Live 1-to-1 Chat Feed</h3>
+        <p><div class="overflow-auto chat-history-div card rounded"><span id="serverMsg"></span></div></p>
 
-<br /><br />
+        <br />
 
-<h3>Live Senders List: <b>Patients</b></h3>
-<p><span id="patientSendersList"</span></p>
+        <h3>Send new message</h3>
+        <ul id="messages">
+            <form id="form" action="">
+                <input id="toUsername" name="toUsername" type="text"
+                    placeholder="username" />
+                <input id="input" autocomplete="off" /><input type="submit" value="send" />    
+            </form>
+        </ul>
 
-<h3>Live Senders List: <b>Doctors</b></h3>
-<p><span id="doctorSendersList"</span></p>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="chat-senders-div card rounded">
+            <h3>Live Senders List</h3>
+            <h3><b>Patients</b></h3>
+            <p><span id="patientSendersList"></span></p>
+
+            <h3><b>Doctors</b></h3>
+            <p><span id="doctorSendersList"></span></p>
+        </div>
+
+    </div>
+
+    <div class="col-sm-3">
+        <nav class="nav flex-column">
+            <a class="nav-link menu" href="/clinic-admin-profile">Clinic Profile</a>
+            <a class="nav-link menu" href="#">Manage Queue</a>
+            <a class="nav-link menu" href="#">Link</a>
+            <a class="nav-link menu" href="#">Link</a>
+            <a class="nav-link menu disabled" href="#">Disabled</a>
+        </nav>
+    </div>
+    
+
+    
+
+</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
@@ -72,17 +97,7 @@
                     //reset input field   
                     input.value = '';    
                 }  
-            });
-
-            userMsgHistoryForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if (targetUsername.value) {
-                    socket.emit('target user', 
-                            { targetUsername: targetUsername.value });
-                }
-            });
-
-            
+            });            
         });
     });
 
@@ -110,14 +125,14 @@
     socket.on("patients to me", (data) => {
         patientSendersListSpan.innerHTML = ``;
         data.forEach(senderUsername => {
-            patientSendersListSpan.innerHTML += `${senderUsername} <br />`;
+            patientSendersListSpan.innerHTML += `<a href="/chat/${senderUsername}">${senderUsername}</a> <br />`;
         });
     });
 
     socket.on("doctors to me", (data) => {
         doctorSendersListSpan.innerHTML = ``;
         data.forEach(senderUsername => {
-            doctorSendersListSpan.innerHTML += `${senderUsername} <br />`;
+            doctorSendersListSpan.innerHTML += `<a href="/chat/${senderUsername}">${senderUsername}</a> <br />`;
         });
     });
 

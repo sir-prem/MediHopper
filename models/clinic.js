@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 
 var clinicSchema = mongoose.Schema({
+    username: String, //references User Schema
     name: { type: String, required: true, unique: true },
     address: { type: String, required: true },
     postcode: { type: String, required: true },

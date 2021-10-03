@@ -23,8 +23,10 @@ router.get("/", ChatController.chat);
 //
 router.get("/clinic-dashboard", Utils.ensureAuthenticated, Utils.ensureAdminRole, ChatController.chatDashboard);
 
-
-//router.get('/:username', ChatController.chatWithUser);
-//const username = req.params.username;
+//=====================================
+//
+//      CHAT WITH USER
+//
+router.get("/:username", Utils.ensureAuthenticated, ChatController.chatWithUser);
 
 module.exports = router;

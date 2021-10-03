@@ -1,5 +1,6 @@
 const Message = require('../models/message');
 const User = require('../models/user');
+const ChatUtils = require('../utils/chatUtils');
 
 function chat (req, res, next) {
     res.render("chat");
@@ -7,6 +8,29 @@ function chat (req, res, next) {
 
 function chatDashboard(req, res, next) {
     res.render("clinic-chat-dashboard");
+}
+
+async function chatWithUser(req, res, next) {
+    const username = req.params.username;
+    if (username === 'undefined') {
+        req.flash("info","Find a GP and join a queue, before chatting.");
+        res.redirect("/user-profile");
+    }
+    else {
+        var recipient = await User.findOne({username: username}).exec();
+        var messages = await messagesWithUser(res.locals.currentUser.username, recipient.username, 50);
+        var htmlDisplayString = '';
+        for (i = messages.length-1; i >= 0; i--) {
+            htmlDisplayString += ChatUtils.displayMessageString(messages[i].createdAt, true, messages[i]);
+        }
+
+        res.render("chat-with-user", 
+                    {
+                        recipient:recipient,
+                        htmlDisplayString: htmlDisplayString,
+                        myRole: res.locals.currentUser.role
+                    });
+    }
 }
 
 // save new messages to DB, and then
@@ -88,18 +112,18 @@ async function filterMessagesByRole(messages, role, limitby) {
 
 // message history between this user (me) and another specific user
 // e.g. only clinic 1 to pgangad, or pgangad to clinic1
-function messagesWithUser(myUsername, otherUsername, io, users) {
-    Message.find({
+async function messagesWithUser(myUsername, recipientUsername, limitby) {
+    console.log(`CTRLR JS: recipient username is: ${recipientUsername}`);
+    var messages = await Message.find({
         $or: [
-            { $and: [{fromUsername:myUsername},{toUsername:otherUsername}] }, 
-            { $and: [{fromUsername:otherUsername},{toUsername:myUsername}] }
+            { $and: [{fromUsername:myUsername},{toUsername:recipientUsername}] }, 
+            { $and: [{fromUsername:recipientUsername},{toUsername:myUsername}] }
             ]
         })
         .sort({ createdAt: -1 })
-        .limit(10)
-        .then(messages => {
-            io.to(users[myUsername]).emit("load messages with user", messages.reverse());
-        });
+        .limit(limitby);
+
+    return messages;
 }
 
 // function that returns arrays for all patients and all doctors 
@@ -134,6 +158,7 @@ async function sendersToRecipient(recipientUsername, io, users) {
 module.exports = {
     chat,
     chatDashboard,
+    chatWithUser,
     saveAndEmitNewMsg,
     loadAllMessagesByRole,
     messagesWithUser,

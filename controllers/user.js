@@ -104,7 +104,14 @@ function signup (req, res, next) {
 }
 
 function userprofile (req, res) { 
-    res.render('user-profile');  
+    console.log(`res.locals.currentUser is: ${res.locals.currentUser}`);
+    console.log(`res.locals.currentUser.clinicUsername is: ${res.locals.currentUser.clinicUsername}`);
+    if (res.locals.currentUser.clinicUsername == 'undefined') {
+        res.render('user-profile', {clinicUsername:'none'});
+    } 
+    else {
+        res.render('user-profile', {clinicUsername:res.locals.currentUser.clinicUsername});
+    }
 }
 
 function doctorprofile (req, res) { 
