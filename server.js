@@ -89,8 +89,10 @@ app.use(express.static(__dirname + '/views/images'));
 // middleware routers
 const userRouter = require(`./routers/user`);
 const clinicRouter = require('./routers/clinic');
+const chatRouter = require('./routers/chat');
 app.use('/', userRouter);
 app.use('/clinic', clinicRouter);
+app.use('/chat', chatRouter);
 
 
 // middleware for invalid routes

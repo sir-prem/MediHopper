@@ -25,7 +25,16 @@
                                 </a>
                                 <nav class="nav">
                                     <% if (currentUser) { %>
-                                        <a class="nav-link headerlink" href="/edit-profile">
+                                        <a class="nav-link headerlink" 
+                                            <% if (currentUser.role === 'patient') { %>
+                                                href="/user-profile">
+                                            <% } %>
+                                            <% if (currentUser.role === 'doctor') { %>
+                                                href="/doctor-profile">
+                                            <% } %>
+                                            <% if (currentUser.role === 'admin') { %>
+                                                href="/clinic-admin-profile">
+                                            <% } %>
                                             Hello, <b><%= currentUser.dispName() %></b>
                                         </a>
                                         <a class="nav-link headerlink" href="/logout">Log out</a>

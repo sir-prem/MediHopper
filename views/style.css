@@ -12,8 +12,22 @@ h1 {
 
 h2 {
   font-family: 'Dosis', sans-serif;
+  font-weight: 200;
+  font-size: 22pt;
+  color: #7BBB54;
+}
+
+h3 {
+  font-family: 'Dosis', sans-serif;
   font-weight: 400;
-  font-size: 20pt;
+  font-size: 14pt;
+  color: #404153;
+}
+
+h4 {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 400;
+  font-size: 12pt;
   color: #7BBB54;
 }
 
@@ -52,8 +66,16 @@ body {
   color: white;
 }
 
-a:active {
-  background-color: hotpink;
+a {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 200;
+  font-size: 14pt;
+  text-decoration: none;
+  color: #7BBB54;
+}
+a:hover {
+  color: #7BBB54;
+  font-weight: 400;
 }
 
 .table > tbody > tr > th, .table > tbody > tr > td {
@@ -124,6 +146,29 @@ td {
 
 textarea.feedback {
   width: 100%;
+}
+
+.msg-name {
+  color: #7BBB54;
+}
+
+.msg-string {
+  
+}
+
+.chat-history-div {
+  height: 200px;
+  border: solid 1px #404153;
+  background-color:WhiteSmoke;
+  padding-left: 3%;
+  padding-right: 3%;
+  display:flex; flex-direction:column-reverse;
+}
+
+.chat-senders-div {
+  padding-left: 7%;
+  padding-right: 7%;
+  margin-top: 50%;
 }
 
 /* Set the size of the div element that contains the map */

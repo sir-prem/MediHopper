@@ -113,13 +113,6 @@ router.post("/delete-profile", UserController.deleteUser);
 router.post("/medical-records", MedicalRecordController.edit);
 
 
-//=====================================
-//
-//      CHAT ROUTE
-//
-router.get("/chat", UserController.chat);
-
-
 //========================================
 //
 //      LOGOUT ROUTE

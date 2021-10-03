@@ -124,7 +124,9 @@
                     <a class="nav-link bg-danger menu" href="#" data-bs-toggle="modal" data-bs-target="#currentMedicationModal">Medications</a>
 
                 </div>
-            <a class="nav-link menu" href="/chat">Chat feature test</a>
+            <% if (clinicUsername !== '' ) { %>
+                <a class="nav-link menu" href="/chat/<%= clinicUsername %>">Chat with Clinic</a>
+            <% } %>
             <a class="nav-link menu" href="#">Link</a>
             <a class="nav-link menu" href="#">Link</a>
             <a class="nav-link menu disabled" href="#">Disabled</a>

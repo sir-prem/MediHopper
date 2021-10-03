@@ -34,7 +34,8 @@ var userSchema = mongoose.Schema({
     profileImage: {
         data: Buffer,
         contentType: String
-        }
+        },
+    clinicUsername: String
 });
 
 userSchema.methods.dispName = function() {

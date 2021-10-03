@@ -1,5 +1,6 @@
 var MedicalRecordSchema = require("../models/medical-records");
 var User = require("../models/user");
+var Clinic = require('../models/clinic');
 var fs = require("fs");
 
 function homepage(req, res, next) {
@@ -92,11 +93,26 @@ function signup (req, res, next) {
             mobile: mobile,
             email: email
         });
+
+        // if new user is a Clinic Admin role,
+        // then save the clinic to DB also
+        if (role === 'admin') {
+            var newClinic = new Clinic ({
+                username: username,
+                name: given,
+                address: `${street} ${city} ${state}`,
+                postcode: postcode,
+                phone: mobile
+            });
+            newClinic.save();
+        }
+
+        /*
         console.log("req.file is: " + req.file);
         console.log("req.file.filename is: " + req.file.filename);
         console.log("req.file.path is: " + req.file.path);
         console.log("req.file.fieldname is: " + req.file.fieldname);
-        //console.log("req.files[0].fieldname is: " + req.files[0].fieldname);
+        */
 
         newUser.profileImage.data = fs.readFileSync(req.file.path);
         newUser.profileImage.contentType = 'image/png';
@@ -109,7 +125,10 @@ async function userprofile(req, res) {
     username: req.user.username,
   });
   const medical_record = { record };
-  res.render("user-profile", medical_record);
+  res.render("user-profile", { 
+                clinicUsername:res.locals.currentUser.clinicUsername, 
+                record: medical_record 
+            });
 }
 
 function doctorprofile (req, res) { 
@@ -226,10 +245,6 @@ function deleteUser (req, res, next) {
     });
 }
 
-function chat (req, res, next) {
-    res.render("chat");
-}
-
 module.exports = {
     homepage,
     signUpForm,
@@ -245,6 +260,5 @@ module.exports = {
     editForm,
     edit,
     deleteForm,
-    deleteUser,
-    chat
+    deleteUser
 }
