@@ -1,42 +1,85 @@
 <% include _header %>
 
 <script>
-    // Initialize and add the map
-    function initMap() {
-      // The location of Uluru
-      const thisClinic = { lat: <%= latitude %>, lng: <%= longitude %> };
-      // The map, centered at Uluru
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
-        center: thisClinic,
-      });
-      // The marker, positioned at Uluru
-      const marker = new google.maps.Marker({
-        position: thisClinic,
-        map: map,
-        icon: { url:        'map-marker.png', 
-                scaledSize: new google.maps.Size(150, 50), // scaled size
-                origin:     new google.maps.Point(0,0), // origin
-                anchor:     new google.maps.Point(100, 15), // anchor
-                labelOrigin: new google.maps.Point(75,15),
-        },
-        label: { color: '#FFFFFF', fontWeight: 'bold', fontSize: '9pt', text: '<%= clinic.clinicName() %>' }
-      });
+    function initMap() {           
+        console.log('<%= currentUser.dispName() %>');
+        const source = { lat: <%= pointA.latitude %>, lng: <%= pointA.longitude %> };
+        //const source = { lat:  -35.314075, lng: 149.108093};
+        const dist = { lat: <%= pointB.latitude %>, lng: <%= pointB.longitude %> };
+         // The location of Uluru
+        // const thisClinic = { lat: <%= pointB.latitude %>, lng: <%= pointB.longitude %> };
+            myOptions = {
+                zoom: 7,
+                center: dist
+            },
+            map = new google.maps.Map(document.getElementById('map'), myOptions),
+            // Instantiate a directions service.
+            directionsService = new google.maps.DirectionsService,
+            directionsDisplay = new google.maps.DirectionsRenderer({
+                map: map
+            }),               
+            new google.maps.Marker({
+                position: dist,                    
+                title: '<%= clinic.clinicName () %>',                    
+                map: map
+            }),                
+            new google.maps.Marker({
+                position: source,
+                icon: "https://img.icons8.com/external-flatart-icons-flat-flatarticons/64/000000/external-location-business-and-teamwork-flatart-icons-flat-flatarticons.png",                   
+                title: '<%= currentUser.dispName() %>',                    
+                map: map
+            });
+            https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+        // get route from A to B
+        calculateAndDisplayRoute(directionsService, directionsDisplay, source, dist);
+        var service = new google.maps.DistanceMatrixService();
+        service.getDistanceMatrix(
+        {
+            origins: [source],
+            destinations: [dist],
+            travelMode: 'DRIVING',
+            // transitOptions: TransitOptions,
+            // drivingOptions: DrivingOptions,
+            // unitSystem: UnitSystem,
+            avoidHighways: false,
+            avoidTolls: false,
+        }, callback);
+        function callback(response, status) {
+            document.getElementById('distance').innerText = response['rows'][0].elements[0].distance.text; 
+            document.getElementById('duration').innerText = response['rows'][0].elements[0].duration.text;
+         
+        }
     }
+    function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
+        directionsService.route({
+            origin: pointA,
+            destination: pointB,
+            travelMode: google.maps.TravelMode.DRIVING
+        }, function (response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    } 
 </script>
 
 <h1>Booking Confirmation</h1>
 <h2>You are all set to see a doctor, <%= currentUser.dispName() %>.</h2>
 <br>
 
-
 <p>You have now successfully joined the queue at:</p>
 <table class="table">
     <tr>
         <td>
-            <br><b> <%= clinic.clinicName() %> </b>
-            <br> <%= clinic.clinicAddress() %> <%= clinic.clinicPostcode() %>
-            <br>Phone: <%= clinic.clinicPhone() %>
+            <br><b>
+                <%= clinic.clinicName() %>
+            </b>
+            <br>
+            <%= clinic.clinicAddress() %>
+                <%= clinic.clinicPostcode() %>
+                    <br>Phone: <%= clinic.clinicPhone() %>
         </td>
         <td width="75%">
             <div id="map"></div>
@@ -44,25 +87,25 @@
     </tr>
 
 </table>
-    
-<p>Your wait time is approximately <b><%= clinic.approxWait() %> hrs</b>.
-    Please aim to arrive by <b><%= etaTime %></b>. </p>
-    
+
+<p>Your wait time is approximately <b>
+        <%= clinic.approxWait() %> hrs
+    </b>.
+    Please aim to arrive by <b>
+        <%= etaTime %>
+    </b>. </p>
+<p>Total distance        
+<span id="distance"> </span> 
+<p>Total duration 
+<span id="duration"> </span> 
 <p>You can manage your queue position by clicking on the button below.</p>
 
 <p>
-    <form action="#" method="post">
-        <input name="clinicID" type="hidden"  value="<%= clinic._id %>">
-        <input type="submit" value="Manage My Queue Position" class="btn btn-primary">
-    </form>
-</p>
-
-<script
-      src="https://maps.googleapis.com/maps/api/js?key=<%= key %>&callback=initMap&libraries=&v=weekly"
-      async
-    ></script>
-
-
+<form action="#" method="post">
+    <input name="clinicID" type="hidden" value="<%= clinic._id %>">
+    <input type="submit" value="Manage My Queue Position" class="btn btn-primary">
+</form>
+</p> 
 
 
 <% include _footer %>
