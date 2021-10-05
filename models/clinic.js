@@ -7,6 +7,7 @@ var clinicSchema = mongoose.Schema({
     postcode: { type: String, required: true },
     service: { type: Number, required: true, default: 25},
     phone: String,
+    website: String,
     queue: [String]
 });
 

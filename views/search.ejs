@@ -1,38 +1,114 @@
 <% include _header %>
 
-<h1>Find a GP</h1>
+<div class="row">
+    <div class="col-sm-12">
+        <h1>Find a GP</h1>
+        <h2>Available GP Clinics</h2>
+    </div>
 
-<h2>Available GP Clinics</h2>
+</div>
+<div class="row">
+    <div class="col-sm-9">
 
-<table class="table">
+        <table class="table">
 
-    <tr>
-        <th>Clinic</th>
-        <th>Address</th>
-        <th>Queue size</th>
-        <th>Approx. Wait</th>
-        <th> </th>
-    </tr>
+            <tr>
+                <th>Clinic</th>
+                <th>Address</th>
+                <th>Queue size</th>
+                <th>Approx. Wait</th>
+                <th> </th>
+            </tr>
+        
+            <% clinicUserTuplesArray.forEach(function(tuple) { %>
+                <tr>
+                    <td>
+                        <!-- link trigger modal -->
+                        <a data-bs-toggle="modal" data-bs-target="#<%= tuple.clinic.username %>Modal"
+                                role="button" href="/clinics/<%= tuple.clinic.username %>">
+                            <%= tuple.clinic.clinicName() %>
+                        </a>
 
-    <% clinics.forEach(function(clinic) { %>
-        <tr>
-            <td>
-                <a href="/clinics/<%= clinic.name %>">
-                    <%= clinic.clinicName() %>
-                </a>
-            </td>
-            <td><%= clinic.address %></td>
-            <td><%= clinic.queueCount() %></td>
-            <td><%= clinic.approxWait() %> hrs</td>
-            <td>
-                <form action="/clinic/booking-confirmation" method="post">
-                    <input name="clinicID" type="hidden"  value="<%= clinic._id %>">
-                    <input type="submit" value="Join Queue" class="btn btn-primary">
-                </form>
-            </td>
-        </tr>
-    <% }) %>
+                        <!-- Modal -->
+                        <div class="modal fade" id="<%= tuple.clinic.username %>Modal" tabindex="-1" 
+                                aria-labelledby="modalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h3 class="modal-title" id="modalLabel">Clinic Details</h3>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h2><%= tuple.clinic.clinicName() %></h2>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <img src="data:image/<%=tuple.user.profileImage.contentType%>;base64,
+                                            <%=tuple.user.profileImage.data.toString('base64')%>"
+                                                width="100%">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <p><b>DESCRIPTION: </b>
+                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                                                sed do eiusmod tempor incididunt ut labore et dolore magna 
+                                                aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
+                                                ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                                                Duis aute irure dolor in reprehenderit in voluptate velit 
+                                                esse cillum dolore eu fugiat nulla pariatur. Excepteur sint 
+                                                occaecat cupidatat non proident, sunt in culpa qui officia 
+                                                deserunt mollit anim id est laborum.
+                                            </p>
+                                            <p><b>Address: </b>
+                                                    <%= tuple.clinic.address %>
+                                                    <%= tuple.clinic.postcode %></p>
+                                            <p><b>Phone: </b><%= tuple.clinic.phone %></p>
+                                            <p><b>Website: </b><a href="<%= tuple.clinic.website %>">
+                                                <%= tuple.clinic.website %></a></p>
+                                            <p><b>User Reviews: </b>To be implemented</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-primary" 
+                                            data-bs-dismiss="modal">Close</button>
+                                
+                                </div>
+                            </div>
+                            </div>
+                        </div>
 
-</table>
+                    </td>
+                    <td><%= tuple.clinic.address %></td>
+                    <td><%= tuple.clinic.queueCount() %></td>
+                    <td><%= tuple.clinic.approxWait() %> hrs</td>
+                    <td>
+                        <form action="/clinic/booking-confirmation" method="post">
+                            <input name="clinicID" type="hidden"  value="<%= tuple.clinic._id %>">
+                            <input type="submit" value="Join Queue" class="btn btn-primary">
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        
+        </table>
+
+    </div>
+
+    <div class="col-sm-3">
+        <nav class="nav flex-column">        
+            <a class="nav-link menu" href="/user-profile">Patient Profile</a>
+            <a class="nav-link menu" href="/chat/<%= clinicUsername %>">Chat with Clinic</a>
+            <a class="nav-link menu" href="#">Manage Queue</a>
+        </nav>
+    </div>
+</div>
+
+
+
 
 <% include _footer %>

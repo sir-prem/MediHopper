@@ -6,6 +6,9 @@
 //
 //-----------------------------------------------
 
+const Clinic    = require("../models/clinic");
+const User      = require("../models/user");
+
 // uses Passport.js's isAuthenticated() method
 // to confirm user authentication
 function ensureAuthenticated(req, res, next) {
@@ -72,10 +75,26 @@ async function getClinicWaitingTime(queueLength, approxWait) {
     return (queueLength * (Math.random(Math.random() * (maxWait - minWait) + minWait))); //The maximum is exclusive and the minimum is inclusive
 }
 
+// Given an array of Clinic models, pair them with their User model,
+// and output an array of tuples (Clinic, User) pairs
+async function joinClinicsWithUsers (clinicsArray) {
+    var outputArray = [];
+    for (i = 0; i < clinicsArray.length; i++) {
+        var clinic = clinicsArray[i];
+        var user = await User.findOne({username: clinic.username}).exec();
+        outputArray.push({
+            clinic: clinic,
+            user:   user
+        });
+    }
+    return outputArray;
+}
+
 module.exports = {
     ensureAuthenticated,
     getClinicWaitingTime,
     ensureAdminRole,
     getCurTimeStr,
-    getEtaTimeStr
+    getEtaTimeStr,
+    joinClinicsWithUsers
 }

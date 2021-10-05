@@ -14,13 +14,17 @@ const options = {
 const geocoder = NodeGeocoder(options);
 
 
-function search (req, res, next) {
-    Clinic.find()
+async function search (req, res, next) {
+    var clinics = await Clinic.find()
         .sort({ name: "ascending" })
-        .exec(function(err, clinics) {
-            if (err) { return next(err); }
-            res.render("search", { clinics: clinics });
-        });
+        .exec();
+
+    var clinicUserTuplesArray = await Utils.joinClinicsWithUsers(clinics);
+    console.log(clinicUserTuplesArray);
+            
+    res.render("search", { clinicUserTuplesArray: clinicUserTuplesArray,
+                clinicUsername:res.locals.currentUser.clinicUsername });
+
 }
 
 async function bookingConf (req, res, next) {
@@ -73,7 +77,8 @@ async function bookingConf (req, res, next) {
             key:        'AIzaSyCFWLMNFY6YuUNRWphBPMkfXJodkz_oMAA',
             curTime:    curTime,
             etaTime:    etaTime,
-            currentUser: res.locals.currentUser
+            currentUser: res.locals.currentUser,
+            clinicUsername:clinic.username
         });
 }
 
