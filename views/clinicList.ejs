@@ -1,0 +1,49 @@
+<% include _header %>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1> <%= clinicsWithePatientsArray[0].clinic.name %> </h1>
+        <h2>Patients List</h2>
+    </div>
+
+ 
+</div>
+<div class="row">
+    <div class="col-sm-9">
+
+        <table class="table">
+
+            <tr>
+                <th>Patient Name</th>    
+                <th> </th>
+            </tr>
+           
+            <% clinicsWithePatientsArray[0].patientsList.forEach(function(tuple) { %>
+                <tr>                      
+                    <td><%= tuple.fullName()%></td>    
+                    <td>
+                        <form action="/clinic/remove-from-list" method="post">
+                            <input name="username" type="hidden"  value="<%= tuple.userName () %>">
+                            <input name="clinicUsername" type="hidden"  value="<%= clinicUsername %>">
+                            <input type="submit" value="Remove" class="btn btn-primary">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/clinic/make-last" method="post">
+                            <input name="username" type="hidden"  value="<%= tuple.userName () %>">
+                            <input name="clinicUsername" type="hidden"  value="<%= clinicUsername %>">
+                            <input type="submit" value="Make Last" class="btn btn-primary">
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        
+        </table>
+
+    </div> 
+</div>
+
+
+
+
+<% include _footer %>

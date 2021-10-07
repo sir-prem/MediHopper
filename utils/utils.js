@@ -104,6 +104,25 @@ async function joinClinicsWithCount (clinicsArray) {
     return outputArray;
 }
 
+// Given an array of Clinic models, pair them with their User model,
+// and output an array of tuples (Clinic, patients) pairs
+async function joinClinicsWithePatients (clinic) {
+    var outputArray = [];   
+        var patients = clinic.queue;
+        //console.log(patients);
+        var patientsList =  [];
+        for (i = 0; i < patients.length; i++) {                        
+            var user = await User.findOne({username: patients[i]}).exec();
+            console.log(user.userName());
+            patientsList.push(user);
+        }
+        outputArray.push({
+            clinic: clinic,
+            patientsList:   patientsList
+        });
+    
+    return outputArray;
+}
 
 module.exports = {
     ensureAuthenticated,
@@ -112,5 +131,6 @@ module.exports = {
     getCurTimeStr,
     getEtaTimeStr,
     joinClinicsWithUsers,
-    joinClinicsWithCount
+    joinClinicsWithCount,
+    joinClinicsWithePatients
 }

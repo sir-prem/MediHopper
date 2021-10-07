@@ -88,13 +88,58 @@ async function showclinics (req, res, next) {
     .exec();
 
     var cliniCountTuplesArray = await Utils.joinClinicsWithCount(clinics);
-    console.log(cliniCountTuplesArray);
+    //console.log(cliniCountTuplesArray);
             
     res.render("clinics", { cliniCountTuplesArray: cliniCountTuplesArray,
                 clinicUsername:res.locals.currentUser.clinicUsername });
 }
+async function showclinicsPatients (req, res, next) {
+
+    const clinicname = req.params.clinicname; 
+    //console.log(req.params);
+
+    var clinic = await Clinic.findOne({username: clinicname}).exec();
+    console.log(clinic);
+    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
+    console.log(clinicsWithePatientsArray);
+            
+    res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
+                clinicUsername:res.locals.currentUser.clinicUsername });
+}
+
+async function removeFromList (req, res, next) {
+
+    const clinicname = req.params.clinicname; 
+    //console.log(req.params);
+
+    var clinic = await Clinic.findOne({username: clinicname}).exec();
+    console.log(clinic);
+    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
+    console.log(clinicsWithePatientsArray);
+            
+    res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
+                clinicUsername:res.locals.currentUser.clinicUsername });
+}
+async function makeLast (req, res, next) {
+
+    const clinicname = req.params.clinicname; 
+    //console.log(req.params);
+
+    var clinic = await Clinic.findOne({username: clinicname}).exec();
+    console.log(clinic);
+    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
+    console.log(clinicsWithePatientsArray);
+            
+    res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
+                clinicUsername:res.locals.currentUser.clinicUsername });
+}
+
 module.exports = {
     search,
     bookingConf,
-    showclinics
+    showclinics,
+    showclinicsPatients,
+    removeFromList,
+    makeLast
+
 }
