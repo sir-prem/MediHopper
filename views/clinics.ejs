@@ -1,0 +1,55 @@
+<% include _header %>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1>Find a GP</h1>
+        <h2>Available GP Clinics</h2>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-sm-9">
+
+        <table class="table">
+
+            <tr>
+                <th>Clinic</th>               
+                <th>Queue size</th>                
+                <th> </th>
+            </tr>
+        
+            <% cliniCountTuplesArray.forEach(function(tuple) { %>
+                <tr>
+                    <td>
+                        <!-- link trigger modal -->
+                        <a data-bs-toggle="modal" data-bs-target="#<%= tuple.clinic.username %>Modal"
+                                role="button" href="/clinicList/<%= tuple.clinic.username %>">
+                            <%= tuple.clinic.clinicName() %>
+                        </a>          
+                       </td>            
+                    <td><%= tuple.clinic.queueCount() %></td>   
+                    <td>
+                        <!-- link trigger modal -->
+                        <a data-bs-toggle="modal" data-bs-target="#<%= tuple.clinic.username %>Modal"
+                                role="button" href="/clinicList/<%= tuple.clinic.username %>">
+                           Show List
+                        </a>          
+                       </td>                    
+                    <!-- <td>
+                        <form action="/clinic/booking-confirmation" method="post">
+                            <input name="clinicID" type="hidden"  value="<%= tuple.clinic._id %>">
+                            <input type="submit" value="Join Queue" class="btn btn-primary">
+                        </form>
+                    </td> -->
+                </tr>
+            <% }) %>
+        
+        </table>
+
+    </div> 
+</div>
+
+
+
+
+<% include _footer %>

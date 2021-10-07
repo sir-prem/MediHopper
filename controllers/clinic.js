@@ -82,8 +82,19 @@ async function bookingConf (req, res, next) {
         });
 }
 
+async function showclinics (req, res, next) {
+    var clinics = await Clinic.find()
+    .sort({ name: "ascending" })
+    .exec();
 
+    var cliniCountTuplesArray = await Utils.joinClinicsWithCount(clinics);
+    console.log(cliniCountTuplesArray);
+            
+    res.render("clinics", { cliniCountTuplesArray: cliniCountTuplesArray,
+                clinicUsername:res.locals.currentUser.clinicUsername });
+}
 module.exports = {
     search,
-    bookingConf
+    bookingConf,
+    showclinics
 }
