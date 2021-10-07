@@ -127,9 +127,10 @@ async function removeFromList (req, res, next) {
 }
 async function makeLast (req, res, next) {
 
-    
+    const patientName = req.body.username; 
+    const clinicname = req.body.clinicUsername; 
 
-   var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
+    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
     res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
                 clinicUsername:res.locals.currentUser.clinicUsername });
 }
