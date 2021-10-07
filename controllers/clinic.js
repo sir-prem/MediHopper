@@ -1,8 +1,8 @@
 var Clinic = require('../models/clinic');
 var Utils = require('../utils/utils');
+const User = require('../models/user');
 
 const NodeGeocoder = require('node-geocoder');
-const User = require('../models/user');
 
 // options for NodeGeocoder npm package
 const options = {
@@ -15,19 +15,28 @@ const geocoder = NodeGeocoder(options);
 
 
 async function search (req, res, next) {
+
     var clinics = await Clinic.find()
         .sort({ name: "ascending" })
         .exec();
 
-    var clinicUserTuplesArray = await Utils.joinClinicsWithUsers(clinics);
-    console.log(clinicUserTuplesArray);
-            
-    res.render("search", { clinicUserTuplesArray: clinicUserTuplesArray,
-                clinicUsername:res.locals.currentUser.clinicUsername });
+    var clinicUserDataArray = await Utils.clinicsNearMe(req.body.address, 
+        req.body.postcode, clinics, req.body.within*1000, geocoder);
+
+    
+
+    res.render("search", { 
+        clinicUserDataArray: clinicUserDataArray,
+        clinicUsername:res.locals.currentUser.clinicUsername,
+        userLocation: `${req.body.address} ${req.body.postcode}`,
+        withinKM: req.body.within
+    });    
 
 }
 
 async function bookingConf (req, res, next) {
+
+    console.log(`req.body.userLocation is ${req.body.userLocation}`);
   
     // current user's username
     var curUsername = res.locals.currentUser.username;
@@ -48,11 +57,15 @@ async function bookingConf (req, res, next) {
         { username: curUsername }, 
         { $set: { clinicUsername: clinic.username } },
         ).exec();
-    console.log(user);
+    //console.log(user);
 
-    // Gets properties of latitude and longitude based on address
+    // Gets properties of latitude and longitude based on clinic's address
     const geoResult = await geocoder.geocode(clinic.clinicAddress());
-    const geoUserResult = await geocoder.geocode(' 221 Burwood Hwy, Burwood VIC 3125');
+
+    // Gets properties of latitude and longitude based on user's current location
+    const geoUserResult = await geocoder.geocode(
+        `${req.body.userLocation}`
+        );
 
    
     const latitude = geoResult[0].latitude;

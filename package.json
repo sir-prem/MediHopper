@@ -25,6 +25,8 @@
     "ejs": "^1.0.0",
     "express": "*",
     "express-session": "^1.7.6",
+    "google-distance": "^1.0.1",
+    "google-distance-api": "^1.0.0",
     "mongodb": "^3.6.8",
     "mongoose": "^5.12.10",
     "morgan": "^1.10.0",

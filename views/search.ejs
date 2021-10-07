@@ -10,17 +10,24 @@
 <div class="row">
     <div class="col-sm-9">
 
+        <p>
+            Showing results for clinics within <b><%= withinKM %> km</b> 
+            from <b><%= userLocation %></b>...
+        </p>
+
         <table class="table">
 
             <tr>
                 <th>Clinic</th>
                 <th>Address</th>
+                <th>Distance</th>
+                <th>Drive time</th>
                 <th>Queue size</th>
                 <th>Approx. Wait</th>
                 <th> </th>
             </tr>
         
-            <% clinicUserTuplesArray.forEach(function(tuple) { %>
+            <% clinicUserDataArray.forEach(function(tuple) { %>
                 <tr>
                     <td>
                         <!-- link trigger modal -->
@@ -84,11 +91,14 @@
 
                     </td>
                     <td><%= tuple.clinic.address %></td>
+                    <td><%= tuple.data.distance %></td>
+                    <td><%= tuple.data.duration %></td>
                     <td><%= tuple.clinic.queueCount() %></td>
                     <td><%= tuple.clinic.approxWait() %> hrs</td>
                     <td>
                         <form action="/clinic/booking-confirmation" method="post">
                             <input name="clinicID" type="hidden"  value="<%= tuple.clinic._id %>">
+                            <input name="userLocation" type="hidden"  value="<%= userLocation %>">
                             <input type="submit" value="Join Queue" class="btn btn-primary">
                         </form>
                     </td>

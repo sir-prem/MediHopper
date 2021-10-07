@@ -134,15 +134,29 @@
 <div class="row">
     <div class="col-sm-6 rounded bg-secondary text-white card">
         <h2>Find a GP</h2>
-        <p>Enter your postcode, and find a GP clinic near you</p>
+        <p>Enter your address and postcode, and find GP clinics near you</p>
             <table>
                 
                 <form action="/clinic/search" method="post">
                     <tr>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-                        <td>Postcode: </td>
+                        <td class="reqfield">Address: </td>
+                        <td>
+                            <input name="address" type="text" class="form-control"
+                                    placeholder="e.g. 123 Smith Street Melbourne" required>
+                        </td>
+                    </tr>
+                    <tr>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                        <td class="reqfield">Postcode: </td>
                         <td>
                             <input name="postcode" type="number" class="form-control"
-                                    placeholder="e.g. 3000">
+                                    placeholder="e.g. 3000" required>
+                        </td>
+                    </tr>
+                    <tr>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                        <td class="reqfield">Within (kms): </td>
+                        <td>
+                            <input name="within" type="number" class="form-control"
+                                    placeholder="e.g. 3" required>
                         </td>
                     </tr>
                     <tr>
