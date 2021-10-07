@@ -31,7 +31,7 @@
                     <td>
                         <form action="/clinic/make-last" method="post">
                             <input name="username" type="hidden"  value="<%= tuple.userName () %>">
-                            <input name="clinicUsername" type="hidden"  value="<%= clinicUsername %>">
+                            <input name="clinicUsername" type="hidden"  value="<%= clinicsWithePatientsArray[0].clinic.name %>">
                             <input type="submit" value="Make Last" class="btn btn-primary">
                         </form>
                     </td>

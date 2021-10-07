@@ -111,10 +111,11 @@ async function joinClinicsWithePatients (clinic) {
         var patients = clinic.queue;
         //console.log(patients);
         var patientsList =  [];
-        for (i = 0; i < patients.length; i++) {                        
+        for (i = 0; i < patients.length; i++) { 
+            if(patients[i] != null) {                       
             var user = await User.findOne({username: patients[i]}).exec();
-            console.log(user.userName());
             patientsList.push(user);
+            }
         }
         outputArray.push({
             clinic: clinic,

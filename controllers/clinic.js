@@ -95,41 +95,41 @@ async function showclinics (req, res, next) {
 }
 async function showclinicsPatients (req, res, next) {
 
-    const clinicname = req.params.clinicname; 
+    const clinicname = req.params.clinicname;
     //console.log(req.params);
 
     var clinic = await Clinic.findOne({username: clinicname}).exec();
     console.log(clinic);
     var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
-    console.log(clinicsWithePatientsArray);
+    console.log(clinicsWithePatientsArray); 
             
     res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
-                clinicUsername:res.locals.currentUser.clinicUsername });
+                clinicUsername:clinicname });
 }
 
 async function removeFromList (req, res, next) {
 
-    const clinicname = req.params.clinicname; 
-    //console.log(req.params);
+    const patientName = req.body.username; 
+    const clinicname = req.body.clinicUsername; 
 
     var clinic = await Clinic.findOne({username: clinicname}).exec();
-    console.log(clinic);
+    console.log(clinic.queue); 
+    var index  = clinic.queue.indexOf(patientName);  
+    console.log(index); 
+    delete clinic.queue[index];       
+    console.log(clinic.queue);     
+    await Clinic.updateOne({id: clinic._id}, {$set : {queue: clinic.queue}}, function(err,doc){
+               console.log(doc.queue);
+    });    
     var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
-    console.log(clinicsWithePatientsArray);
-            
     res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
                 clinicUsername:res.locals.currentUser.clinicUsername });
 }
 async function makeLast (req, res, next) {
 
-    const clinicname = req.params.clinicname; 
-    //console.log(req.params);
+    
 
-    var clinic = await Clinic.findOne({username: clinicname}).exec();
-    console.log(clinic);
-    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
-    console.log(clinicsWithePatientsArray);
-            
+   var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
     res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
                 clinicUsername:res.locals.currentUser.clinicUsername });
 }
