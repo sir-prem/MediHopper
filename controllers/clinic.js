@@ -23,8 +23,6 @@ async function search (req, res, next) {
     var clinicUserDataArray = await Utils.clinicsNearMe(req.body.address, 
         req.body.postcode, clinics, req.body.within*1000, geocoder);
 
-    
-
     res.render("search", { 
         clinicUserDataArray: clinicUserDataArray,
         clinicUsername:res.locals.currentUser.clinicUsername,

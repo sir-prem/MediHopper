@@ -81,6 +81,7 @@ async function getClinicWaitingTime(queueLength, approxWait) {
 }
 
 
+
 // function that returns a promise on success of google map data
 // including distance and travel time (by driving)
 function getDistance(mapParams) {
