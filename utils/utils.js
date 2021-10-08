@@ -213,7 +213,6 @@ module.exports = {
     getEtaTimeStr,
     clinicDistToMe,
     clinicsNearMe,
-    joinClinicsWithUsers,
     joinClinicsWithCount,
     joinClinicsWithePatients
 }
