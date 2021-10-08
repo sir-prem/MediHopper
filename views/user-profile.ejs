@@ -1,9 +1,14 @@
 <% include _header %>
 
+<% 
+    var vitals_data = vitals ? vitals.vitals : [];  
+    var treatment_history_data = treatment_history ? treatment_history.history : [];  
+%>
+
 <h1>User Profile</h1>
 
 <div class="row">
-    <div class="col-sm-6 rounded card profile">
+    <div class="col-sm-4 rounded card profile">
         <table>
             <tr>
                 <td width="40%">
@@ -108,7 +113,46 @@
         </table>
         
     </div>
-    <div class="col-sm-3"></div>
+    <div class="col-sm-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        Blood Pressure
+                    </div>
+                    <div class="card-body text-center" style="min-height: 100px;">
+                        <%= vitals_data.length ? vitals_data[vitals_data.length-1].bp_high +"/"+ vitals_data[vitals_data.length-1].bp_low : 'N/A' %>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        Heart Beat
+                    </div>
+                    <div class="card-body text-center"  style="min-height: 100px;">
+                        <%= vitals_data.length ? vitals_data[vitals_data.length-1].heart_beat : 'N/A' %>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        Oxygen Saturation
+                    </div>
+                    <div class="card-body text-center"  style="min-height: 100px;">
+                        <%= vitals_data.length ? vitals_data[vitals_data.length-1].spo2 : 'N/A' %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button  data-bs-toggle="modal" data-bs-target="#vitalModal" class="btn btn-primary btn-sm">Add Vitals</button>
+                <button  data-bs-toggle="modal" data-bs-target="#vitalDataModal" class="btn btn-primary btn-sm">View Vitals Data</button>
+            </div>
+        </div>
+    </div>
     <div class="col-sm-3">
         <nav class="nav flex-column">
             <a class="nav-link menu" href="/edit-profile">Edit Profile</a>
@@ -126,6 +170,8 @@
             <% if (clinicUsername !== '' ) { %>
                 <a class="nav-link menu" href="/chat/<%= clinicUsername %>">Chat with Clinic</a>
             <% } %>
+            <a class="nav-link menu" href="#" data-bs-toggle="modal" data-bs-target="#treatmentHistoryDataModal" >Treatment History</a>
+
             <a class="nav-link menu" href="/delete-profile">Delete Account</a>
         </nav>
     </div>
@@ -170,6 +216,209 @@
     <div class="col-sm-6"></div>
 </div>
 
+
+<div class="modal fade" id="treatmentHistoryDataModal" tabindex="-1" aria-labelledby="vitalDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="vitalLabel">Treatment History Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+                <table class="table table-bordered table-stripped">
+                    <tr>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Disease
+                        </th>
+                        <th>
+                            Treatment Type
+                        </th>
+                        <th>
+                            Doctor
+                        </th>
+                        <th>
+                            Hospital
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                    <% 
+                        treatment_history_data.map((item) => {
+                            %>
+                            <tr>
+                                <td>
+                                    <%= new Date(item.cdate).toDateString()%>
+                                </td>
+                                <td>
+                                    <%=item.disease%>
+                                </td>
+                                <td>
+                                    <%=item.type%>
+                                </td>
+                                <td>
+                                    <%=item.doctor %>
+                                </td>
+                                <td>
+                                    <%=item.hospital%>
+                                </td>
+                                <td>
+                                    <a href="/remove-treatment-history/<%= item.id %>" class="btn btn-sm btn-danger">Remove</a>
+                                </td>
+                            </tr>
+                            
+                            <%
+                        })
+                    %>
+                </table>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#treatmentHistoryModal" >Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="modal fade" id="treatmentHistoryModal" tabindex="-1" aria-labelledby="vitalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="vitalLabel">Update Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/add-treatment-history" method="POST">
+          <div class="mb-3">
+              <label for="bpInput1" class="form-label">Disease</label>
+              <input type="text" min="0" name="disease" class="form-control mt-1" placeholder="Disease" />
+
+              <label for="bpInput1" class="form-label">Treatment Type</label>
+              <input type="text"  name="type" class="form-control" placeholder="Treament Type" />
+
+              <label for="bpInput1" class="form-label">Doctor</label>
+              <input type="text" min="0" name="doctor" class="form-control" placeholder="Doctor" />
+
+              <label for="bpInput1" class="form-label">Hospital</label>
+              <input type="text"  name="hospital" class="form-control" placeholder="Hospital" />
+
+              <label for="bpInput1" class="form-label">Date of Treatment</label>
+              <input type="date" required name="cdate" class="form-control" placeholder="Date" />
+
+            </div>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade" id="vitalDataModal" tabindex="-1" aria-labelledby="vitalDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="vitalLabel">Vitals Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+                <table class="table table-bordered table-stripped">
+                    <tr>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            BP High
+                        </th>
+                        <th>
+                            BP Low
+                        </th>
+                        <th>
+                            Heart Beat
+                        </th>
+                        <th>
+                            Oxygen Saturation
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                    <% 
+                        vitals_data.map((item) => {
+                            %>
+                            <tr>
+                                <td>
+                                    <%= new Date(item.cdate).toDateString()%>
+                                </td>
+                                <td>
+                                    <%=item.bp_high%>
+                                </td>
+                                <td>
+                                    <%=item.bp_low%>
+                                </td>
+                                <td>
+                                    <%=item.heart_beat %>
+                                </td>
+                                <td>
+                                    <%=item.spo2%>
+                                </td>
+                                <td>
+                                    <a href="/remove-vital/<%= item.id %>" class="btn btn-sm btn-danger">Remove</a>
+                                </td>
+                            </tr>
+                            
+                            <%
+                        })
+                    %>
+                </table>
+            </div>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="vitalModal" tabindex="-1" aria-labelledby="vitalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="vitalLabel">Update Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/add-vital" method="POST">
+          <div class="mb-3">
+              <label for="bpInput1" class="form-label">Blood Pressure</label>
+              <input type="number" min="0" name="bp_high" class="form-control" placeholder="BP High" />
+              <input type="number" min="0" name="bp_low" class="form-control mt-1" placeholder="BP Low" />
+
+              <label for="bpInput1" class="form-label">Hear Beat</label>
+              <input type="number" min="0" name="heart_beat" class="form-control" placeholder="Hear Beat" />
+
+              <label for="bpInput1" class="form-label">Oxygen Saturation</label>
+              <input type="number" min="0" name="spo2" class="form-control" placeholder="Spo2" />
+
+
+              <label for="bpInput1" class="form-label">Date</label>
+              <input type="date" required name="cdate" class="form-control" placeholder="Date" />
+
+            </div>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
 
 
 

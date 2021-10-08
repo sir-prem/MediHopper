@@ -93,8 +93,84 @@ async function bookingConf (req, res, next) {
         });
 }
 
+async function showclinics (req, res, next) {
+    var clinics = await Clinic.find()
+    .sort({ name: "ascending" })
+    .exec();
+
+    var cliniCountTuplesArray = await Utils.joinClinicsWithCount(clinics);
+    //console.log(cliniCountTuplesArray);
+            
+    res.render("clinics", { cliniCountTuplesArray: cliniCountTuplesArray,
+                clinicUsername:res.locals.currentUser.clinicUsername });
+}
+async function showclinicsPatients (req, res, next) {
+
+    const clinicname = req.params.clinicname;
+    //console.log(req.params);
+
+    var clinic = await Clinic.findOne({username: clinicname}).exec();
+    console.log(clinic);
+    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
+    console.log(clinicsWithePatientsArray); 
+            
+    res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
+                clinicUsername:clinicname });
+}
+
+async function removeFromList (req, res, next) {
+
+    const patientName = req.body.username; 
+    const clinicname = req.body.clinicUsername; 
+
+    var clinic = await Clinic.findOne({username: clinicname}).exec();
+    console.log(clinicname); 
+    console.log(clinic.queue); 
+    var index  = clinic.queue.indexOf(patientName);  
+    console.log(patientName); 
+    console.log(index); 
+    clinic.queue.splice(index, 1);         
+    console.log(clinic.queue);     
+
+    await Clinic.findOneAndUpdate({username: clinicname}, {$set : {queue: clinic.queue}});
+    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
+    res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
+                clinicUsername:clinic.username });
+}
+async function makeLast (req, res, next) {
+
+    const patientName = req.body.username; 
+    const clinicname = req.body.clinicUsername; 
+
+    var clinic = await Clinic.findOne({username: clinicname}).exec();
+    var index  = clinic.queue.indexOf(patientName);  
+    clinic.queue.splice(index, 1);  
+     
+    await Clinic.findOneAndUpdate({username: clinicname}, {$set : {queue: clinic.queue}});
+    
+    var clinic = await Clinic.findOneAndUpdate(
+        { username: clinicname }, 
+        { $push: { queue: patientName } },
+        ).exec();
+
+    
+        var clinics = await Clinic.find()
+        .sort({ name: "ascending" })
+        .exec();
+    
+        var cliniCountTuplesArray = await Utils.joinClinicsWithCount(clinics);
+        //console.log(cliniCountTuplesArray);
+                
+        res.render("clinics", { cliniCountTuplesArray: cliniCountTuplesArray,
+                    clinicUsername:res.locals.currentUser.clinicUsername });
+}
 
 module.exports = {
     search,
-    bookingConf
+    bookingConf,
+    showclinics,
+    showclinicsPatients,
+    removeFromList,
+    makeLast
+
 }

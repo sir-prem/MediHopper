@@ -1,4 +1,6 @@
 var MedicalRecordSchema = require("../models/medical-records");
+var TreatmentHistoryRecordSchema = require("../models/treatment_history");
+var VitalRecordSchema = require("../models/vital");
 var User = require("../models/user");
 var Clinic = require('../models/clinic');
 var fs = require("fs");
@@ -124,10 +126,18 @@ async function userprofile(req, res) {
   const record = await MedicalRecordSchema.findOne({
     username: req.user.username,
   });
-  const medical_record = { record };
+  const vitals = await VitalRecordSchema.findOne({
+    username: req.user.username,
+  });
+  const treatment_history = await TreatmentHistoryRecordSchema.findOne({
+    username: req.user.username,
+  });
+  const medical_record = { record, vitals, treatment_history };
   res.render("user-profile", { 
                 clinicUsername:res.locals.currentUser.clinicUsername, 
-                record: medical_record 
+                record: record,
+                vitals,
+                 treatment_history
             });
 }
 

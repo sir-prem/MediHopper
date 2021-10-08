@@ -4,6 +4,8 @@ var multer = require("multer");
 
 var UserController = require("../controllers/user");
 var MedicalRecordController = require("../controllers/medical-records");
+var VitalController = require("../controllers/vital");
+var TreatmentHistoryController = require("../controllers/treatment-history");
 var Utils = require("../utils/utils");
 
 var router = express.Router();
@@ -112,6 +114,14 @@ router.post("/delete-profile", UserController.deleteUser);
 
 router.post("/medical-records", MedicalRecordController.edit);
 
+
+router.post("/add-vital", VitalController.add);
+
+router.get("/remove-vital/:id", VitalController.remove);
+
+router.post("/add-treatment-history", TreatmentHistoryController.add);
+
+router.get("/remove-treatment-history/:id", TreatmentHistoryController.remove);
 
 //========================================
 //
