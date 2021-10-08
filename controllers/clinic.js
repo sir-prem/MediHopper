@@ -113,26 +113,45 @@ async function removeFromList (req, res, next) {
     const clinicname = req.body.clinicUsername; 
 
     var clinic = await Clinic.findOne({username: clinicname}).exec();
+    console.log(clinicname); 
     console.log(clinic.queue); 
     var index  = clinic.queue.indexOf(patientName);  
+    console.log(patientName); 
     console.log(index); 
-    delete clinic.queue[index];       
+    clinic.queue.splice(index, 1);         
     console.log(clinic.queue);     
-    await Clinic.updateOne({id: clinic._id}, {$set : {queue: clinic.queue}}, function(err,doc){
-               console.log(doc.queue);
-    });    
+
+    await Clinic.findOneAndUpdate({username: clinicname}, {$set : {queue: clinic.queue}});
     var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
     res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
-                clinicUsername:res.locals.currentUser.clinicUsername });
+                clinicUsername:clinic.username });
 }
 async function makeLast (req, res, next) {
 
     const patientName = req.body.username; 
     const clinicname = req.body.clinicUsername; 
 
-    var clinicsWithePatientsArray = await Utils.joinClinicsWithePatients(clinic);
-    res.render("clinicList", { clinicsWithePatientsArray: clinicsWithePatientsArray,
-                clinicUsername:res.locals.currentUser.clinicUsername });
+    var clinic = await Clinic.findOne({username: clinicname}).exec();
+    var index  = clinic.queue.indexOf(patientName);  
+    clinic.queue.splice(index, 1);  
+     
+    await Clinic.findOneAndUpdate({username: clinicname}, {$set : {queue: clinic.queue}});
+    
+    var clinic = await Clinic.findOneAndUpdate(
+        { username: clinicname }, 
+        { $push: { queue: patientName } },
+        ).exec();
+
+    
+        var clinics = await Clinic.find()
+        .sort({ name: "ascending" })
+        .exec();
+    
+        var cliniCountTuplesArray = await Utils.joinClinicsWithCount(clinics);
+        //console.log(cliniCountTuplesArray);
+                
+        res.render("clinics", { cliniCountTuplesArray: cliniCountTuplesArray,
+                    clinicUsername:res.locals.currentUser.clinicUsername });
 }
 
 module.exports = {
