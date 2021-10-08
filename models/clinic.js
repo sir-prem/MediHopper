@@ -30,6 +30,9 @@ clinicSchema.methods.clinicPhone = function() {
 clinicSchema.methods.queueCount = function() {
     return this.queue.length;
 };
+clinicSchema.methods.patients = function() {
+    return this.queue;
+};
 clinicSchema.methods.serviceTime = function() {
     return this.service;
 };

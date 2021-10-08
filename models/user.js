@@ -42,6 +42,14 @@ userSchema.methods.dispName = function() {
     return this.name.given || this.username;
 };
 
+userSchema.methods.userName = function() {
+    return this.username;
+};
+
+userSchema.methods.fullName = function() {
+    return this.name.given + ' ' + this.name.middle + ' ' + this.name.family;
+};
+
 var noop = function() {};
 
 userSchema.pre("save", function(done){

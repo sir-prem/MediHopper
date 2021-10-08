@@ -12,6 +12,7 @@ const User      = require("../models/user");
 // uses Passport.js's isAuthenticated() method
 // to confirm user authentication
 function ensureAuthenticated(req, res, next) {
+    
     if (req.isAuthenticated()) {
         next();
     } else {
@@ -89,6 +90,41 @@ async function joinClinicsWithUsers (clinicsArray) {
     }
     return outputArray;
 }
+// Given an array of Clinic models, pair them with their User model,
+// and output an array of tuples (Clinic, Count) pairs
+async function joinClinicsWithCount (clinicsArray) {
+    var outputArray = [];
+    for (i = 0; i < clinicsArray.length; i++) {
+        var clinic = clinicsArray[i];
+        var count = clinic.queueCount();
+        outputArray.push({
+            clinic: clinic,
+            count:   count
+        });
+    }
+    return outputArray;
+}
+
+// Given an array of Clinic models, pair them with their User model,
+// and output an array of tuples (Clinic, patients) pairs
+async function joinClinicsWithePatients (clinic) {
+    var outputArray = [];   
+        var patients = clinic.queue;
+        //console.log(patients);
+        var patientsList =  [];
+        for (i = 0; i < patients.length; i++) { 
+            if(patients[i] != null) {                       
+            var user = await User.findOne({username: patients[i]}).exec();
+            patientsList.push(user);
+            }
+        }
+        outputArray.push({
+            clinic: clinic,
+            patientsList:   patientsList
+        });
+    
+    return outputArray;
+}
 
 module.exports = {
     ensureAuthenticated,
@@ -96,5 +132,7 @@ module.exports = {
     ensureAdminRole,
     getCurTimeStr,
     getEtaTimeStr,
-    joinClinicsWithUsers
+    joinClinicsWithUsers,
+    joinClinicsWithCount,
+    joinClinicsWithePatients
 }
