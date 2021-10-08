@@ -9,6 +9,11 @@
 const Clinic    = require("../models/clinic");
 const User      = require("../models/user");
 
+// npm package which utilises google-distance-matrix api 
+// to calculate distances, driving time etc
+const distance  = require('google-distance');
+distance.apiKey = 'AIzaSyCFWLMNFY6YuUNRWphBPMkfXJodkz_oMAA';
+
 // uses Passport.js's isAuthenticated() method
 // to confirm user authentication
 function ensureAuthenticated(req, res, next) {
@@ -76,19 +81,93 @@ async function getClinicWaitingTime(queueLength, approxWait) {
     return (queueLength * (Math.random(Math.random() * (maxWait - minWait) + minWait))); //The maximum is exclusive and the minimum is inclusive
 }
 
-// Given an array of Clinic models, pair them with their User model,
-// and output an array of tuples (Clinic, User) pairs
-async function joinClinicsWithUsers (clinicsArray) {
-    var outputArray = [];
+
+
+// function that returns a promise on success of google map data
+// including distance and travel time (by driving)
+function getDistance(mapParams) {
+
+    return new Promise(function(resolve, reject) {
+
+        distance.get(
+            mapParams,
+            function(err, data) {
+            if (err) return console.log(err);
+                resolve(data);
+            });
+
+    });
+
+}
+
+//returns json tuple { clinic model, distance data, clinic user} for a given clinic
+async function clinicDistToMe(address, postcode, clinic, geocoder) {
+
+    var jsonOutputTuple;
+
+    var user = await User.findOne({username: clinic.username}).exec();
+
+    var geoResultSearchedPostcode = await geocoder.geocode({
+        address: address,
+        country: 'Australia',
+        zipcode: postcode
+        });
+    var geoResultClinic = await geocoder.geocode(clinic.address);
+
+    var postcodeCoords = {
+        lat: geoResultSearchedPostcode[0].latitude,
+        long: geoResultSearchedPostcode[0].longitude
+    };
+    var clinicCoords = {
+        lat: geoResultClinic[0].latitude,
+        long: geoResultClinic[0].longitude
+    };
+    
+    var mapParams = {
+        origin: `${postcodeCoords.lat}, ${postcodeCoords.long}`,
+        destination: `${clinicCoords.lat}, ${clinicCoords.long}`,
+        mode: 'driving',
+        units: 'metric',
+        index: 1
+        };
+
+
+    return new Promise(function(resolve, reject) {
+
+        getDistance(mapParams)
+        .then(function(data) {  // once promise is fulfilled
+
+            jsonOutputTuple = {
+                user: user,
+                clinic: clinic,
+                data: data
+            };
+            resolve(jsonOutputTuple);
+
+        });
+
+    });
+}
+
+// given all the clinics in an array, this function returns an array of 
+// {clinic, user, mapData} tuples for the clinics within a given proximity of
+// my location
+async function clinicsNearMe(myAddress, myPostcode, clinicsArray, withinMetres, geocoder) {
+
+    var clinicUserDataArray = [];
+
     for (i = 0; i < clinicsArray.length; i++) {
-        var clinic = clinicsArray[i];
-        var user = await User.findOne({username: clinic.username}).exec();
-        outputArray.push({
-            clinic: clinic,
-            user:   user
+
+        await clinicDistToMe(myAddress, myPostcode, clinicsArray[i], geocoder)
+        .then((clinicUserDataTuple)=> {  // obtain resulting tuple once the promise 
+                                    // is fulfilled
+                                    
+            if (clinicUserDataTuple.data.distanceValue <= withinMetres) {
+                clinicUserDataArray.push(clinicUserDataTuple);
+            }
         });
     }
-    return outputArray;
+    return clinicUserDataArray;
 }
 // Given an array of Clinic models, pair them with their User model,
 // and output an array of tuples (Clinic, Count) pairs
@@ -132,6 +211,8 @@ module.exports = {
     ensureAdminRole,
     getCurTimeStr,
     getEtaTimeStr,
+    clinicDistToMe,
+    clinicsNearMe,
     joinClinicsWithUsers,
     joinClinicsWithCount,
     joinClinicsWithePatients

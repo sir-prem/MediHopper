@@ -44,15 +44,6 @@ function chatInit (io, sessionMiddleware, passport, users) {
         socket.on('from message', (data) => {    
            ChatController.saveAndEmitNewMsg(data, io, users);
         });
-/*
-        console.log(`HERE 1`);
-        socket.on('recipient user', (data) => {
-            console.log(`SETUPCHAT JS: recipient username is: ${data.recipientUsername}`);
-            ChatController.messagesWithUser(socket.request.user.username, 
-                                            data.recipientUsername, io, users, 50);
-        });
-        console.log(`HERE 2`);
-        */
 
     });
 }
